@@ -23,7 +23,7 @@ import {
   Building2,
   Briefcase,
 } from 'lucide-react';
-import { leads, students, applications, visaCases, payments, walkInEnquiries, commissions } from '../data/mockData';
+import { leads, students, applications, visaCases, testPrepFees, serviceFees, walkInEnquiries, commissions } from '../data/mockData';
 import { testPrepStudents, batches } from '../data/testPrepData';
 
 const Dashboard: React.FC = () => {
@@ -36,16 +36,16 @@ const Dashboard: React.FC = () => {
     const totalStudents = students.length;
     const activeApps = applications.filter(a => ['Draft', 'Submitted', 'In Review'].includes(a.status)).length;
     const visaApproved = visaCases.filter(v => v.currentStage === 'Visa Approved').length;
-    const totalRevenue = payments.filter(p => p.status === 'Paid').reduce((sum, p) => sum + p.amount, 0);
-    const pendingPayments = payments.filter(p => p.status === 'Pending').reduce((sum, p) => sum + p.amount, 0);
+    const totalRevenue = [...testPrepFees, ...serviceFees].reduce((sum, f) => sum + f.amountPaid, 0);
+    const pendingPayments = [...testPrepFees, ...serviceFees].reduce((sum, f) => sum + f.pendingAmount, 0);
 
     return [
       { label: 'Total Leads', value: totalLeads, icon: Users, color: 'blue', path: '/counseling' },
       { label: 'Total Students', value: totalStudents, icon: UserCheck, color: 'emerald', path: '/students' },
       { label: 'Active Applications', value: activeApps, icon: FileText, color: 'indigo', path: '/applications' },
       { label: 'Visa Approved', value: visaApproved, icon: CheckCircle, color: 'purple', path: '/visa-processing' },
-      { label: 'Revenue Collected', value: `$${totalRevenue.toLocaleString()}`, icon: DollarSign, color: 'amber', path: '/finance' },
-      { label: 'Pending Payments', value: `$${pendingPayments.toLocaleString()}`, icon: Clock, color: 'rose', path: '/finance' },
+      { label: 'Revenue Collected', value: `₹${totalRevenue.toLocaleString('en-IN')}`, icon: DollarSign, color: 'amber', path: '/finance' },
+      { label: 'Pending Payments', value: `₹${pendingPayments.toLocaleString('en-IN')}`, icon: Clock, color: 'rose', path: '/finance' },
       { label: 'Walk-ins Today', value: walkInEnquiries.filter(w => w.inquiryDate === '2026-03-12').length, icon: UserPlus, color: 'teal', path: '/test-preparation' },
       { label: 'Lead Conversion', value: `${leads.length > 0 ? Math.round((leads.filter(l => l.status === 'Converted').length / leads.length) * 100) : 0}%`, icon: Target, color: 'cyan', path: '/counseling' },
     ];
@@ -71,8 +71,8 @@ const Dashboard: React.FC = () => {
 
   // 4. Revenue Summary
   const revenueStats = useMemo(() => {
-    const totalPaid = payments.filter(p => p.status === 'Paid').reduce((sum, p) => sum + p.amount, 0);
-    const totalPending = payments.filter(p => p.status === 'Pending').reduce((sum, p) => sum + p.amount, 0);
+    const totalPaid = [...testPrepFees, ...serviceFees].reduce((sum, f) => sum + f.amountPaid, 0);
+    const totalPending = [...testPrepFees, ...serviceFees].reduce((sum, f) => sum + f.pendingAmount, 0);
     const totalFees = totalPaid + totalPending;
     const collectionRate = totalFees > 0 ? (totalPaid / totalFees) * 100 : 0;
 
@@ -88,10 +88,10 @@ const Dashboard: React.FC = () => {
       studentCounts[student.country] = (studentCounts[student.country] || 0) + 1;
     });
 
-    payments.forEach(payment => {
-      const student = students.find(s => s.id === payment.studentId);
-      if (student && payment.status === 'Paid') {
-        revenueByCountry[student.country] = (revenueByCountry[student.country] || 0) + payment.amount;
+    serviceFees.forEach(sf => {
+      const student = students.find(s => s.id === sf.studentId);
+      if (student) {
+        revenueByCountry[student.country] = (revenueByCountry[student.country] || 0) + sf.amountPaid;
       }
     });
 
@@ -489,11 +489,11 @@ const Dashboard: React.FC = () => {
             <div className="grid grid-cols-2 gap-4">
               <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-900/20">
                 <p className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase font-bold tracking-wider">Total Paid</p>
-                <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">${revenueStats.totalPaid.toLocaleString()}</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">₹{revenueStats.totalPaid.toLocaleString('en-IN')}</p>
               </div>
               <div className="p-4 bg-rose-50 dark:bg-rose-900/10 rounded-2xl border border-rose-100 dark:border-rose-900/20">
                 <p className="text-[10px] text-rose-600 dark:text-rose-400 uppercase font-bold tracking-wider">Pending</p>
-                <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">${revenueStats.totalPending.toLocaleString()}</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">₹{revenueStats.totalPending.toLocaleString('en-IN')}</p>
               </div>
             </div>
             
@@ -515,8 +515,8 @@ const Dashboard: React.FC = () => {
           </div>
           <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800">
             <div className="flex justify-between text-xs font-medium text-gray-500">
-              <span>Total Service Fees</span>
-              <span className="text-gray-900 dark:text-white font-bold">${revenueStats.totalFees.toLocaleString()}</span>
+              <span>Total Fees Expected</span>
+              <span className="text-gray-900 dark:text-white font-bold">₹{revenueStats.totalFees.toLocaleString('en-IN')}</span>
             </div>
           </div>
         </Card>
@@ -602,11 +602,11 @@ const Dashboard: React.FC = () => {
           <div className="grid grid-cols-2 gap-4 mb-5">
             <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-900/20">
               <p className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase font-bold tracking-wider">Received</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">${commissionOverview.totalReceived.toLocaleString()}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">₹{commissionOverview.totalReceived.toLocaleString('en-IN')}</p>
             </div>
             <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-2xl border border-amber-100 dark:border-amber-900/20">
               <p className="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-bold tracking-wider">Expected</p>
-              <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">${commissionOverview.totalExpected.toLocaleString()}</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">₹{commissionOverview.totalExpected.toLocaleString('en-IN')}</p>
             </div>
           </div>
           <div className="space-y-2">
@@ -662,7 +662,7 @@ const Dashboard: React.FC = () => {
                     }}
                   >
                     <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Revenue</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">${country.revenue.toLocaleString()}</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">₹{country.revenue.toLocaleString('en-IN')}</p>
                   </div>
                 </div>
               </div>

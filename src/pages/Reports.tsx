@@ -15,15 +15,17 @@ import {
   ClipboardList,
   Filter,
   Handshake,
+  IndianRupee,
 } from 'lucide-react';
 import { PageHeader } from '../components/PageHeader';
 import { Card } from '../components/Card';
 import { Badge } from '../components/Badge';
 import { 
-  students, 
-  applications, 
-  visaCases, 
-  payments,
+  students,
+  applications,
+  visaCases,
+  testPrepFees,
+  serviceFees,
   leads,
   partners,
   commissions,
@@ -33,7 +35,7 @@ import {
   batches,
 } from '../data/mockData';
 
-type ReportTab = 'walkin' | 'department' | 'country' | 'university' | 'intake' | 'yearly' | 'commission' | 'leadsource' | 'partner';
+type ReportTab = 'walkin' | 'department' | 'country' | 'university' | 'intake' | 'yearly' | 'commission' | 'leadsource' | 'partner' | 'finance';
 
 const tabs: { key: ReportTab; label: string; icon: React.ElementType }[] = [
   { key: 'walkin', label: 'Walk-in', icon: ClipboardList },
@@ -45,6 +47,7 @@ const tabs: { key: ReportTab; label: string; icon: React.ElementType }[] = [
   { key: 'commission', label: 'Commission', icon: DollarSign },
   { key: 'leadsource', label: 'Lead Source', icon: Megaphone },
   { key: 'partner', label: 'Partner', icon: Handshake },
+  { key: 'finance', label: 'Finance', icon: IndianRupee },
 ];
 
 // ── Helper: progress bar ──
@@ -193,7 +196,7 @@ const WalkInReports: React.FC = () => {
 // ═══════════════════════════════════════════
 const DepartmentReports: React.FC = () => {
   const data = useMemo(() => {
-    const paidRevenue = payments.filter(p => p.status === 'Paid').reduce((s, p) => s + p.amount, 0);
+    const paidRevenue = [...testPrepFees, ...serviceFees].reduce((s, f) => s + f.amountPaid, 0);
 
     const departments = [
       {
@@ -228,8 +231,8 @@ const DepartmentReports: React.FC = () => {
       },
       {
         name: 'Finance',
-        active: payments.filter(p => p.status === 'Pending').length,
-        completed: payments.filter(p => p.status === 'Paid').length,
+        active: [...testPrepFees, ...serviceFees].filter(f => f.paymentStatus !== 'Paid').length,
+        completed: [...testPrepFees, ...serviceFees].filter(f => f.paymentStatus === 'Paid').length,
         revenue: paidRevenue,
       },
     ];
@@ -260,7 +263,7 @@ const DepartmentReports: React.FC = () => {
               {dept.revenue > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500 dark:text-gray-400">Revenue</span>
-                  <span className="font-bold text-indigo-600">${dept.revenue.toLocaleString()}</span>
+                  <span className="font-bold text-indigo-600">₹{dept.revenue.toLocaleString('en-IN')}</span>
                 </div>
               )}
             </div>
@@ -286,7 +289,7 @@ const DepartmentReports: React.FC = () => {
                   <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{dept.name}</td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{dept.active}</td>
                   <td className="px-6 py-4 text-sm text-green-600 font-medium">{dept.completed}</td>
-                  <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{dept.revenue > 0 ? `$${dept.revenue.toLocaleString()}` : '–'}</td>
+                  <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{dept.revenue > 0 ? `₹${dept.revenue.toLocaleString('en-IN')}` : '–'}</td>
                 </tr>
               ))}
             </tbody>
@@ -485,11 +488,11 @@ const IntakeReports: React.FC = () => {
       }
     });
 
-    // Revenue by intake: find student's application intake, sum paid payments
-    payments.filter(p => p.status === 'Paid').forEach(p => {
-      const app = applications.find(a => a.studentId === p.studentId);
+    // Revenue by intake: join serviceFees through applications
+    serviceFees.forEach(sf => {
+      const app = applications.find(a => a.studentId === sf.studentId);
       if (app && intakeMap[app.intake]) {
-        intakeMap[app.intake].revenue += p.amount;
+        intakeMap[app.intake].revenue += sf.amountPaid;
       }
     });
 
@@ -511,7 +514,7 @@ const IntakeReports: React.FC = () => {
             <div className="space-y-2 text-sm">
               <div className="flex justify-between"><span className="text-gray-500 dark:text-gray-400">Applications</span><span className="font-bold text-gray-900 dark:text-white">{d.applications}</span></div>
               <div className="flex justify-between"><span className="text-gray-500 dark:text-gray-400">Visas Approved</span><span className="font-bold text-green-600">{d.visas}</span></div>
-              <div className="flex justify-between"><span className="text-gray-500 dark:text-gray-400">Revenue</span><span className="font-bold text-indigo-600">${d.revenue.toLocaleString()}</span></div>
+              <div className="flex justify-between"><span className="text-gray-500 dark:text-gray-400">Revenue</span><span className="font-bold text-indigo-600">₹{d.revenue.toLocaleString('en-IN')}</span></div>
             </div>
             <div className="mt-3"><ProgressBar value={d.applications} max={maxApps} color="bg-amber-500" /></div>
           </Card>
@@ -535,7 +538,7 @@ const IntakeReports: React.FC = () => {
                   <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{d.intake}</td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{d.applications}</td>
                   <td className="px-6 py-4 text-sm text-green-600 font-medium">{d.visas}</td>
-                  <td className="px-6 py-4 text-sm font-semibold text-indigo-600">${d.revenue.toLocaleString()}</td>
+                  <td className="px-6 py-4 text-sm font-semibold text-indigo-600">₹{d.revenue.toLocaleString('en-IN')}</td>
                 </tr>
               ))}
             </tbody>
@@ -566,10 +569,10 @@ const YearlyReports: React.FC = () => {
       if (y && yearMap[y] && vc.currentStage === 'Visa Approved') yearMap[y].visas++;
     });
 
-    payments.filter(p => p.status === 'Paid').forEach(p => {
-      const app = applications.find(a => a.studentId === p.studentId);
+    serviceFees.forEach(sf => {
+      const app = applications.find(a => a.studentId === sf.studentId);
       const y = app?.year;
-      if (y && yearMap[y]) yearMap[y].revenue += p.amount;
+      if (y && yearMap[y]) yearMap[y].revenue += sf.amountPaid;
     });
 
     return Object.entries(yearMap)
@@ -591,7 +594,7 @@ const YearlyReports: React.FC = () => {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between"><span className="text-gray-500 dark:text-gray-400">Applications</span><span className="font-bold text-gray-900 dark:text-white">{d.applications}</span></div>
               <div className="flex justify-between"><span className="text-gray-500 dark:text-gray-400">Visas Approved</span><span className="font-bold text-green-600">{d.visas}</span></div>
-              <div className="flex justify-between"><span className="text-gray-500 dark:text-gray-400">Revenue</span><span className="font-bold text-indigo-600">${d.revenue.toLocaleString()}</span></div>
+              <div className="flex justify-between"><span className="text-gray-500 dark:text-gray-400">Revenue</span><span className="font-bold text-indigo-600">₹{d.revenue.toLocaleString('en-IN')}</span></div>
             </div>
           </Card>
         ))}
@@ -614,7 +617,7 @@ const YearlyReports: React.FC = () => {
                   <td className="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white">{d.year}</td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{d.applications}</td>
                   <td className="px-6 py-4 text-sm text-green-600 font-medium">{d.visas}</td>
-                  <td className="px-6 py-4 text-sm font-semibold text-indigo-600">${d.revenue.toLocaleString()}</td>
+                  <td className="px-6 py-4 text-sm font-semibold text-indigo-600">₹{d.revenue.toLocaleString('en-IN')}</td>
                 </tr>
               ))}
             </tbody>
@@ -646,9 +649,9 @@ const CommissionReports: React.FC = () => {
       <h3 className="text-lg font-bold text-gray-900 dark:text-white">Commission Tracking</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard label="Total Expected" value={`$${totalExpected.toLocaleString()}`} icon={DollarSign} color="text-indigo-600" bg="bg-indigo-50 dark:bg-indigo-900/20" />
-        <StatCard label="Received" value={`$${totalReceived.toLocaleString()}`} icon={CheckCircle2} color="text-green-600" bg="bg-green-50 dark:bg-green-900/20" />
-        <StatCard label="Pending" value={`$${(totalExpected - totalReceived).toLocaleString()}`} icon={Briefcase} color="text-amber-600" bg="bg-amber-50 dark:bg-amber-900/20" />
+        <StatCard label="Total Expected" value={`₹${totalExpected.toLocaleString('en-IN')}`} icon={IndianRupee} color="text-indigo-600" bg="bg-indigo-50 dark:bg-indigo-900/20" />
+        <StatCard label="Received" value={`₹${totalReceived.toLocaleString('en-IN')}`} icon={CheckCircle2} color="text-green-600" bg="bg-green-50 dark:bg-green-900/20" />
+        <StatCard label="Pending" value={`₹${(totalExpected - totalReceived).toLocaleString('en-IN')}`} icon={Briefcase} color="text-amber-600" bg="bg-amber-50 dark:bg-amber-900/20" />
       </div>
 
       {/* Per Partner */}
@@ -665,9 +668,9 @@ const CommissionReports: React.FC = () => {
                 <Badge variant={p.pending <= 0 ? 'success' : 'warning'}>{p.pending <= 0 ? 'Settled' : 'Pending'}</Badge>
               </div>
               <div className="grid grid-cols-3 gap-3 mt-3 text-sm">
-                <div><span className="text-gray-500 dark:text-gray-400 block text-xs">Expected</span><span className="font-bold text-gray-900 dark:text-white">${p.totalExpected.toLocaleString()}</span></div>
-                <div><span className="text-gray-500 dark:text-gray-400 block text-xs">Received</span><span className="font-bold text-green-600">${p.totalReceived.toLocaleString()}</span></div>
-                <div><span className="text-gray-500 dark:text-gray-400 block text-xs">Pending</span><span className="font-bold text-amber-600">${p.pending.toLocaleString()}</span></div>
+                <div><span className="text-gray-500 dark:text-gray-400 block text-xs">Expected</span><span className="font-bold text-gray-900 dark:text-white">₹{p.totalExpected.toLocaleString('en-IN')}</span></div>
+                <div><span className="text-gray-500 dark:text-gray-400 block text-xs">Received</span><span className="font-bold text-green-600">₹{p.totalReceived.toLocaleString('en-IN')}</span></div>
+                <div><span className="text-gray-500 dark:text-gray-400 block text-xs">Pending</span><span className="font-bold text-amber-600">₹{p.pending.toLocaleString('en-IN')}</span></div>
               </div>
             </div>
           ))}
@@ -701,8 +704,8 @@ const CommissionReports: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{c.university}</td>
                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{partner?.name || c.partnerId}</td>
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">${c.expectedAmount.toLocaleString()}</td>
-                    <td className="px-6 py-4"><Badge variant={c.status === 'Received' ? 'success' : 'warning'}>{c.status}</Badge></td>
+                    <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">₹{c.expectedAmount.toLocaleString('en-IN')}</td>
+                    <td className="px-6 py-4"><Badge variant={c.status === 'Received' ? 'success' : c.status === 'Requested' ? 'indigo' : 'warning'}>{c.status}</Badge></td>
                   </tr>
                 );
               })}
@@ -874,8 +877,8 @@ const PartnerReports: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <StatCard label="Total Partners" value={partners.length} icon={Handshake} color="text-blue-600" bg="bg-blue-50 dark:bg-blue-900/20" />
         <StatCard label="Total Referrals" value={data.totalReferrals} icon={Users} color="text-purple-600" bg="bg-purple-50 dark:bg-purple-900/20" />
-        <StatCard label="Commission Expected" value={`$${data.totalCommExpected.toLocaleString()}`} icon={DollarSign} color="text-indigo-600" bg="bg-indigo-50 dark:bg-indigo-900/20" sub={`${data.partnerStats.filter(p => p.totalExpected > 0).length} partners with deals`} />
-        <StatCard label="Commission Received" value={`$${data.totalCommReceived.toLocaleString()}`} icon={CheckCircle2} color="text-green-600" bg="bg-green-50 dark:bg-green-900/20" sub={`$${(data.totalCommExpected - data.totalCommReceived).toLocaleString()} pending`} />
+        <StatCard label="Commission Expected" value={`₹${data.totalCommExpected.toLocaleString('en-IN')}`} icon={IndianRupee} color="text-indigo-600" bg="bg-indigo-50 dark:bg-indigo-900/20" sub={`${data.partnerStats.filter(p => p.totalExpected > 0).length} partners with deals`} />
+        <StatCard label="Commission Received" value={`₹${data.totalCommReceived.toLocaleString('en-IN')}`} icon={CheckCircle2} color="text-green-600" bg="bg-green-50 dark:bg-green-900/20" sub={`₹${(data.totalCommExpected - data.totalCommReceived).toLocaleString('en-IN')} pending`} />
       </div>
 
       {/* Per-Partner Table */}
@@ -910,8 +913,8 @@ const PartnerReports: React.FC = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{p.universities.length}</td>
-                  <td className="px-6 py-4 text-sm font-bold text-indigo-600">${p.totalExpected.toLocaleString()}</td>
-                  <td className="px-6 py-4 text-sm font-bold text-emerald-600">${p.totalReceived.toLocaleString()}</td>
+                  <td className="px-6 py-4 text-sm font-bold text-indigo-600">₹{p.totalExpected.toLocaleString('en-IN')}</td>
+                  <td className="px-6 py-4 text-sm font-bold text-emerald-600">₹{p.totalReceived.toLocaleString('en-IN')}</td>
                 </tr>
               ))}
             </tbody>
@@ -943,7 +946,7 @@ const PartnerReports: React.FC = () => {
                       {u.apps}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm font-bold text-indigo-600">${u.commission.toLocaleString()}</td>
+                  <td className="px-6 py-4 text-sm font-bold text-indigo-600">₹{u.commission.toLocaleString('en-IN')}</td>
                   <td className="px-6 py-4">
                     <div className="flex flex-wrap gap-1">
                       {u.partners.map(pn => (
@@ -953,6 +956,120 @@ const PartnerReports: React.FC = () => {
                       ))}
                     </div>
                   </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════
+// Finance Reports Tab
+// ═══════════════════════════════════════════
+const FinanceReports: React.FC = () => {
+  const fmtR = (n: number) => '₹' + n.toLocaleString('en-IN');
+
+  const data = useMemo(() => {
+    const tpExpected  = testPrepFees.reduce((s, f) => s + f.courseFee, 0);
+    const tpCollected = testPrepFees.reduce((s, f) => s + f.amountPaid, 0);
+    const sfExpected  = serviceFees.reduce((s, f) => s + f.serviceFee, 0);
+    const sfCollected = serviceFees.reduce((s, f) => s + f.amountPaid, 0);
+    const totalExpected  = tpExpected + sfExpected;
+    const totalCollected = tpCollected + sfCollected;
+    const collectionRate = totalExpected > 0 ? (totalCollected / totalExpected) * 100 : 0;
+
+    const branches = ['Hyderabad', 'Kolkata', 'Delhi'];
+    const byBranch = branches.map(b => {
+      const tp = testPrepFees.filter(f => f.branch === b);
+      const sf = serviceFees.filter(f => f.branch === b);
+      return {
+        branch: b,
+        collected: tp.reduce((s, f) => s + f.amountPaid, 0) + sf.reduce((s, f) => s + f.amountPaid, 0),
+        expected:  tp.reduce((s, f) => s + f.courseFee, 0)  + sf.reduce((s, f) => s + f.serviceFee, 0),
+      };
+    });
+
+    const intakeMap: Record<string, number> = {};
+    serviceFees.forEach(sf => {
+      const app = applications.find(a => a.studentId === sf.studentId);
+      const intake = app?.intake || 'Other';
+      intakeMap[intake] = (intakeMap[intake] || 0) + sf.amountPaid;
+    });
+    const byIntake = Object.entries(intakeMap).map(([intake, revenue]) => ({ intake, revenue })).sort((a, b) => b.revenue - a.revenue);
+
+    return { tpExpected, tpCollected, sfExpected, sfCollected, totalExpected, totalCollected, collectionRate, byBranch, byIntake };
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      <h3 className="text-lg font-bold text-gray-900 dark:text-white">Finance Summary</h3>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="Total Expected"       value={fmtR(data.totalExpected)}  icon={IndianRupee}  color="text-blue-600"    bg="bg-blue-50 dark:bg-blue-900/20" />
+        <StatCard label="Total Collected"      value={fmtR(data.totalCollected)} icon={CheckCircle2} color="text-emerald-600" bg="bg-emerald-50 dark:bg-emerald-900/20" />
+        <StatCard label="Test Prep Revenue"    value={fmtR(data.tpCollected)}    icon={IndianRupee}  color="text-indigo-600"  bg="bg-indigo-50 dark:bg-indigo-900/20"  sub={`of ${fmtR(data.tpExpected)} expected`} />
+        <StatCard label="Service Fee Revenue"  value={fmtR(data.sfCollected)}    icon={IndianRupee}  color="text-violet-600"  bg="bg-violet-50 dark:bg-violet-900/20"  sub={`of ${fmtR(data.sfExpected)} expected`} />
+      </div>
+
+      <Card className="border-none shadow-sm">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <p className="text-sm font-bold text-gray-900 dark:text-white">Overall Collection Progress</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{fmtR(data.totalCollected)} collected of {fmtR(data.totalExpected)} expected</p>
+          </div>
+          <p className="text-2xl font-black text-gray-900 dark:text-white">{data.collectionRate.toFixed(1)}%</p>
+        </div>
+        <ProgressBar value={data.totalCollected} max={data.totalExpected} color="bg-blue-500" />
+      </Card>
+
+      <Card className="p-0 overflow-hidden border-none shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+          <h4 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Revenue by Branch</h4>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
+                {['Branch', 'Expected', 'Collected', 'Collection Rate'].map(h => (
+                  <th key={h} className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+              {data.byBranch.map(b => (
+                <tr key={b.branch} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                  <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{b.branch}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{fmtR(b.expected)}</td>
+                  <td className="px-6 py-4 text-sm font-bold text-emerald-600 dark:text-emerald-400">{fmtR(b.collected)}</td>
+                  <td className="px-6 py-4 text-sm font-bold text-gray-900 dark:text-white">{b.expected > 0 ? ((b.collected / b.expected) * 100).toFixed(1) : 0}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      <Card className="p-0 overflow-hidden border-none shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+          <h4 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Service Fee Revenue by Intake</h4>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
+                {['Intake', 'Collected Revenue'].map(h => (
+                  <th key={h} className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+              {data.byIntake.map(d => (
+                <tr key={d.intake} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                  <td className="px-6 py-4 text-sm font-semibold text-gray-900 dark:text-white">{d.intake}</td>
+                  <td className="px-6 py-4 text-sm font-bold text-indigo-600 dark:text-indigo-400">{fmtR(d.revenue)}</td>
                 </tr>
               ))}
             </tbody>
@@ -979,7 +1096,7 @@ const Reports: React.FC = () => {
     const approvedVisas = visaCases.filter(vc => vc.visaResult === 'Approved' || vc.currentStage === 'Visa Approved').length;
     const visaSuccessRate = totalVisaCases > 0 ? ((approvedVisas / totalVisaCases) * 100).toFixed(1) : '0.0';
 
-    const totalRevenue = payments.filter(p => p.status === 'Paid').reduce((acc, p) => acc + p.amount, 0);
+    const totalRevenue = [...testPrepFees, ...serviceFees].reduce((acc, f) => acc + f.amountPaid, 0);
     const activeMarkets = new Set(applications.map(a => a.country)).size;
 
     return { conversionRate, convertedLeads, totalLeads, visaSuccessRate, approvedVisas, totalVisaCases, totalRevenue, activeMarkets };
@@ -995,6 +1112,7 @@ const Reports: React.FC = () => {
     commission: <CommissionReports />,
     leadsource: <LeadSourceReports />,
     partner: <PartnerReports />,
+    finance: <FinanceReports />,
   };
 
   return (
@@ -1039,7 +1157,7 @@ const Reports: React.FC = () => {
             <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 rounded-lg"><DollarSign size={20} /></div>
             <Badge variant="info">Total Revenue</Badge>
           </div>
-          <p className="text-2xl font-bold text-gray-900 dark:text-white">${topKpis.totalRevenue.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-white">₹{topKpis.totalRevenue.toLocaleString('en-IN')}</p>
           <div className="mt-2 flex items-center text-xs text-green-600 font-bold">
             <ArrowUpRight size={12} className="mr-1" /> Collected from payments
           </div>
