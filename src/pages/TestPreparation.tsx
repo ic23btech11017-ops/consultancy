@@ -225,7 +225,7 @@ const TestPreparation: React.FC = () => {
 
   const inputCls = "w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:text-white transition-all duration-200";
   const labelCls = "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1";
-  const thCls = "px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider";
+  const thCls = "px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap";
 
   return (
     <div className="space-y-6">
@@ -295,7 +295,7 @@ const TestPreparation: React.FC = () => {
       {activeTab === 'walkins' && (
         <Card className="p-0 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="min-w-max w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
                   <th className={thCls}>Name</th>
@@ -312,25 +312,25 @@ const TestPreparation: React.FC = () => {
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {filteredWalkIns.map((w) => (
                   <tr key={w.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200">
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900 dark:text-white">{w.name}</div>
                       {w.notes && <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{w.notes}</div>}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
                       <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{w.phone}</span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
                       <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{w.branch}</span>
                     </td>
-                    <td className="px-6 py-4"><Badge variant={w.interestedTest === 'IELTS' ? 'info' : w.interestedTest === 'PTE' ? 'indigo' : 'warning'}>{w.interestedTest}</Badge></td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-6 py-4 whitespace-nowrap"><Badge variant={w.interestedTest === 'IELTS' ? 'info' : w.interestedTest === 'PTE' ? 'indigo' : 'warning'}>{w.interestedTest}</Badge></td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
                       <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{w.inquiryDate}</span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{w.assignedCounselor}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{w.followUpDate}</td>
-                    <td className="px-6 py-4">{getWalkInBadge(w.status)}</td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1 flex-wrap">
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{w.assignedCounselor}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{w.followUpDate}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{getWalkInBadge(w.status)}</td>
+                    <td className="px-6 py-4 text-right whitespace-nowrap">
+                      <div className="flex items-center justify-end gap-1">
                         {w.status === 'New Inquiry' && (
                           <button onClick={() => handleWalkInStatusChange(w.id, 'Demo Scheduled')} className="px-2.5 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200">
                             Schedule Demo
@@ -363,7 +363,7 @@ const TestPreparation: React.FC = () => {
       {activeTab === 'students' && (
         <Card className="p-0 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="min-w-max w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
                   <th className={thCls}>Student Name</th>
@@ -382,24 +382,24 @@ const TestPreparation: React.FC = () => {
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {filteredStudents.map((s) => (
                   <tr key={s.id} onClick={() => navigate(s.studentId ? `/students/${s.studentId}` : `/test-preparation/${s.id}`)} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200 cursor-pointer">
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">{s.studentName}</div>
                       {s.referredToCounseling && <div className="text-xs text-purple-600 dark:text-purple-400 mt-0.5">Referred to Counseling</div>}
                     </td>
-                    <td className="px-6 py-4"><Badge variant={s.testType === 'IELTS' ? 'info' : s.testType === 'PTE' ? 'indigo' : 'warning'}>{s.testType}</Badge></td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{s.branch}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{s.batch || '—'}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{s.trainer}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{s.startDate}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{s.endDate}</td>
-                    <td className="px-6 py-4">{getFeeBadge(s.feeStatus)}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-6 py-4 whitespace-nowrap"><Badge variant={s.testType === 'IELTS' ? 'info' : s.testType === 'PTE' ? 'indigo' : 'warning'}>{s.testType}</Badge></td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{s.branch}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{s.batch || '—'}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{s.trainer}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{s.startDate}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{s.endDate}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{getFeeBadge(s.feeStatus)}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
                       {s.currentScore ? <span className="font-medium">{s.currentScore}</span> : '—'}
                       {s.targetScore && <span className="text-xs text-gray-400 ml-1">/ {s.targetScore}</span>}
                     </td>
-                    <td className="px-6 py-4">{getStudentBadge(s.status)}</td>
-                    <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex items-center justify-end gap-1 flex-wrap">
+                    <td className="px-6 py-4 whitespace-nowrap">{getStudentBadge(s.status)}</td>
+                    <td className="px-6 py-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-end gap-1">
                         {s.status === 'Active' && (
                           <>
                             <button onClick={() => { setEditingStudentId(s.id); setScoreValue(s.currentScore); setShowScoreModal(true); }} className="px-2.5 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200">
@@ -435,7 +435,7 @@ const TestPreparation: React.FC = () => {
       {activeTab === 'batches' && (
         <Card className="p-0 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="min-w-max w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
                   <th className={thCls}>Batch Name</th>
@@ -452,18 +452,18 @@ const TestPreparation: React.FC = () => {
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {filteredBatches.map((b) => (
                   <tr key={b.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200 cursor-pointer" onClick={() => navigate(`/test-preparation/${b.id}`)}>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900 dark:text-white">{b.batchName}</div>
                     </td>
-                    <td className="px-6 py-4"><Badge variant={b.testType === 'IELTS' ? 'info' : b.testType === 'PTE' ? 'indigo' : 'warning'}>{b.testType}</Badge></td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{b.branch}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{b.trainer}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{b.startDate}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{b.endDate}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-6 py-4 whitespace-nowrap"><Badge variant={b.testType === 'IELTS' ? 'info' : b.testType === 'PTE' ? 'indigo' : 'warning'}>{b.testType}</Badge></td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{b.branch}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{b.trainer}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{b.startDate}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">{b.endDate}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
                       <span className="font-medium">{b.studentsEnrolled}</span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <span>{b.capacity}</span>
                         <div className="w-16 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -474,7 +474,7 @@ const TestPreparation: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4">{getBatchBadge(b.status)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{getBatchBadge(b.status)}</td>
                   </tr>
                 ))}
                 {filteredBatches.length === 0 && (

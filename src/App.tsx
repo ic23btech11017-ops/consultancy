@@ -17,6 +17,8 @@ import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import TestPreparation from './pages/TestPreparation';
 import BatchProfile from './pages/BatchProfile';
+import MyProfile from './pages/MyProfile';
+import HelpSupport from './pages/HelpSupport';
 
 export default function App() {
   return (
@@ -38,6 +40,8 @@ export default function App() {
             <Route path="partners/:id" element={<PartnerProfile />} />
             <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="my-profile" element={<MyProfile />} />
+            <Route path="help-support" element={<HelpSupport />} />
           </Route>
         </Routes>
       </BrowserRouter>
