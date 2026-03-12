@@ -12,9 +12,15 @@ import {
   TrendingUp,
   Globe,
   Calendar,
-  ChevronRight
+  ChevronRight,
+  GitBranch,
+  BookOpen,
+  ArrowRight,
+  MapPin,
+  GraduationCap,
 } from 'lucide-react';
 import { leads, students, applications, visaCases, payments } from '../data/mockData';
+import { testPrepStudents, batches } from '../data/testPrepData';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -105,6 +111,42 @@ const Dashboard: React.FC = () => {
       .sort((a, b) => new Date(a.appointmentDate!).getTime() - new Date(b.appointmentDate!).getTime());
   }, []);
 
+  // 7. Counseling Pipeline Summary
+  const pipelineStats = useMemo(() => {
+    const activeStages = ['New Inquiry', 'Initial Counseling', 'Destination Selection', 'Course Shortlisting', 'University Selection', 'Application Preparation', 'Application Started'];
+    const stageCounts: Record<string, number> = {};
+    leads.forEach(l => { stageCounts[l.status] = (stageCounts[l.status] || 0) + 1; });
+
+    const totalActive = leads.filter(l => activeStages.includes(l.status)).length;
+    const converted = leads.filter(l => l.status === 'Converted').length;
+    const lost = leads.filter(l => l.status === 'Lost').length;
+    const closed = converted + lost;
+    const conversionRate = closed > 0 ? Math.round((converted / closed) * 100) : 0;
+    const awaitingTest = leads.filter(l => (l.testStatus === 'Not Taken' || l.testStatus === 'Enrolled') && activeStages.includes(l.status)).length;
+
+    const topStages = Object.entries(stageCounts)
+      .sort((a, b) => b[1] - a[1]);
+
+    return { totalActive, converted, lost, conversionRate, awaitingTest, topStages, total: leads.length };
+  }, []);
+
+  // 8. Test Prep Summary
+  const testPrepStats = useMemo(() => {
+    const active = testPrepStudents.filter(s => s.status === 'Active').length;
+    const completed = testPrepStudents.filter(s => s.status === 'Completed').length;
+    const dropped = testPrepStudents.filter(s => s.status === 'Dropped').length;
+    const referredToCounseling = testPrepStudents.filter(s => s.referredToCounseling).length;
+    const runningBatches = batches.filter(b => b.status === 'Running').length;
+    const totalCapacity = batches.filter(b => b.status === 'Running').reduce((s, b) => s + b.capacity, 0);
+    const totalEnrolled = batches.filter(b => b.status === 'Running').reduce((s, b) => s + b.studentsEnrolled, 0);
+    const occupancyRate = totalCapacity > 0 ? Math.round((totalEnrolled / totalCapacity) * 100) : 0;
+
+    const byTestType: Record<string, number> = {};
+    testPrepStudents.forEach(s => { byTestType[s.testType] = (byTestType[s.testType] || 0) + 1; });
+
+    return { active, completed, dropped, referredToCounseling, runningBatches, occupancyRate, totalEnrolled, totalCapacity, byTestType };
+  }, []);
+
   return (
     <div className="space-y-6 pb-12">
       <PageHeader 
@@ -132,6 +174,202 @@ const Dashboard: React.FC = () => {
             </div>
           </Card>
         ))}
+      </div>
+
+      {/* Counseling Pipeline & Test Prep */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Counseling Pipeline */}
+        <Card className="border-none shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
+              <GitBranch className="w-5 h-5 mr-2 text-blue-500" />
+              Counseling Pipeline
+            </h3>
+            <button
+              onClick={() => navigate('/counseling')}
+              className="text-xs font-bold text-blue-500 hover:text-blue-600 flex items-center gap-1 transition-colors"
+            >
+              View Pipeline <ChevronRight className="w-3 h-3" />
+            </button>
+          </div>
+
+          {/* Mini KPIs Row */}
+          <div className="grid grid-cols-4 gap-3 mb-5">
+            <div className="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-900/20 text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-white">{pipelineStats.totalActive}</p>
+              <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-tight">Active</p>
+            </div>
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/20 text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-white">{pipelineStats.conversionRate}%</p>
+              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-tight">Conv. Rate</p>
+            </div>
+            <div className="p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/20 text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-white">{pipelineStats.awaitingTest}</p>
+              <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold uppercase tracking-tight">Need Test</p>
+            </div>
+            <div className="p-3 bg-red-50 dark:bg-red-900/10 rounded-xl border border-red-100 dark:border-red-900/20 text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-white">{pipelineStats.lost}</p>
+              <p className="text-[10px] text-red-600 dark:text-red-400 font-bold uppercase tracking-tight">Lost</p>
+            </div>
+          </div>
+
+          {/* Stage Breakdown */}
+          <div className="space-y-2.5">
+            {pipelineStats.topStages.map(([stage, count]) => (
+              <div key={stage} className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600 dark:text-gray-400 font-medium">{stage}</span>
+                  <span className="text-gray-900 dark:text-white font-bold">{count}</span>
+                </div>
+                <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-blue-500 rounded-full transition-all duration-1000"
+                    style={{ width: `${(count / pipelineStats.total) * 100}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Recent Leads Quick View */}
+          <div className="mt-5 pt-5 border-t border-gray-100 dark:border-gray-800">
+            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Latest Leads</p>
+            <div className="space-y-2">
+              {leads.slice(0, 3).map(lead => (
+                <div
+                  key={lead.id}
+                  className="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                  onClick={() => lead.studentId ? navigate(`/students/${lead.studentId}`) : navigate(`/counseling/${lead.id}`)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                      {lead.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{lead.name}</p>
+                      <div className="flex items-center gap-2 text-[10px] text-gray-500 dark:text-gray-400">
+                        <span className="flex items-center"><MapPin className="w-2.5 h-2.5 mr-0.5" />{lead.interestedCountry || 'TBD'}</span>
+                        <span>•</span>
+                        <span>{lead.targetLevel}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${
+                    lead.status === 'Converted' ? 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400'
+                    : lead.status === 'Lost' ? 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                    : 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                  }`}>{lead.status}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
+
+        {/* Test Preparation */}
+        <Card className="border-none shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
+              <BookOpen className="w-5 h-5 mr-2 text-amber-500" />
+              Test Preparation
+            </h3>
+            <button
+              onClick={() => navigate('/test-preparation')}
+              className="text-xs font-bold text-amber-500 hover:text-amber-600 flex items-center gap-1 transition-colors"
+            >
+              View Module <ChevronRight className="w-3 h-3" />
+            </button>
+          </div>
+
+          {/* Mini KPIs Row */}
+          <div className="grid grid-cols-4 gap-3 mb-5">
+            <div className="p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/20 text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-white">{testPrepStats.active}</p>
+              <p className="text-[10px] text-amber-600 dark:text-amber-400 font-bold uppercase tracking-tight">Active</p>
+            </div>
+            <div className="p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/20 text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-white">{testPrepStats.completed}</p>
+              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-tight">Completed</p>
+            </div>
+            <div className="p-3 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-900/20 text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-white">{testPrepStats.referredToCounseling}</p>
+              <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-tight">Referred</p>
+            </div>
+            <div className="p-3 bg-violet-50 dark:bg-violet-900/10 rounded-xl border border-violet-100 dark:border-violet-900/20 text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-white">{testPrepStats.runningBatches}</p>
+              <p className="text-[10px] text-violet-600 dark:text-violet-400 font-bold uppercase tracking-tight">Running</p>
+            </div>
+          </div>
+
+          {/* Batch Occupancy */}
+          <div className="space-y-2 mb-5">
+            <div className="flex justify-between items-end">
+              <div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Batch Occupancy</p>
+                <p className="text-2xl font-black text-gray-900 dark:text-white">{testPrepStats.occupancyRate}%</p>
+              </div>
+              <p className="text-xs text-gray-400">{testPrepStats.totalEnrolled}/{testPrepStats.totalCapacity} seats filled</p>
+            </div>
+            <div className="h-3 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-amber-500 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(245,158,11,0.3)]"
+                style={{ width: `${testPrepStats.occupancyRate}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Test Type Breakdown */}
+          <div className="space-y-2.5 mb-5">
+            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">By Test Type</p>
+            {Object.entries(testPrepStats.byTestType).sort((a, b) => (b[1] as number) - (a[1] as number)).map(([type, count]) => (
+              <div
+                key={type}
+                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800"
+              >
+                <div className="flex items-center gap-2">
+                  <GraduationCap className="w-4 h-4 text-amber-500" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{type}</span>
+                </div>
+                <span className="px-2.5 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-bold rounded-lg">
+                  {count} students
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Active Students Quick View */}
+          <div className="pt-5 border-t border-gray-100 dark:border-gray-800">
+            <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Active Students</p>
+            <div className="space-y-2">
+              {testPrepStudents.filter(s => s.status === 'Active').slice(0, 3).map(student => (
+                <div
+                  key={student.id}
+                  className="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                  onClick={() => navigate(`/students/${student.studentId}`)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                      {student.studentName.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{student.studentName}</p>
+                      <div className="flex items-center gap-2 text-[10px] text-gray-500 dark:text-gray-400">
+                        <span>{student.testType}</span>
+                        <span>•</span>
+                        <span>{student.branch}</span>
+                        {student.currentScore && <><span>•</span><span>Score: {student.currentScore}</span></>}
+                      </div>
+                    </div>
+                  </div>
+                  <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${
+                    student.feeStatus === 'Paid' ? 'bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400'
+                    : student.feeStatus === 'Partial' ? 'bg-amber-100 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400'
+                    : 'bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400'
+                  }`}>{student.feeStatus}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
