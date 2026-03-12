@@ -16,6 +16,7 @@ import PartnerProfile from './pages/PartnerProfile';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import TestPreparation from './pages/TestPreparation';
+import BatchProfile from './pages/BatchProfile';
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="students" element={<Students />} />
             <Route path="students/:id" element={<StudentProfile />} />
             <Route path="test-preparation" element={<TestPreparation />} />
+            <Route path="test-preparation/:id" element={<BatchProfile />} />
             <Route path="applications" element={<Applications />} />
             <Route path="visa-processing" element={<VisaProcessing />} />
             <Route path="finance" element={<Finance />} />

@@ -1,9 +1,14 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { Sun, Moon, Bell, Search } from 'lucide-react';
+import { Sun, Moon, Bell, Search, PanelLeftClose, PanelLeft } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
-export const Topbar: React.FC = () => {
+interface TopbarProps {
+  collapsed: boolean;
+  onToggleCollapse: () => void;
+}
+
+export const Topbar: React.FC<TopbarProps> = ({ collapsed, onToggleCollapse }) => {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
 
@@ -16,7 +21,14 @@ export const Topbar: React.FC = () => {
 
   return (
     <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between px-6 transition-all duration-300">
-      <div className="flex items-center">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onToggleCollapse}
+          className="p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {collapsed ? <PanelLeft className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
+        </button>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-300">
           {getPageTitle()}
         </h2>

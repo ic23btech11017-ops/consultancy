@@ -18,8 +18,12 @@ import {
   ArrowRight,
   MapPin,
   GraduationCap,
+  UserPlus,
+  Target,
+  Building2,
+  Briefcase,
 } from 'lucide-react';
-import { leads, students, applications, visaCases, payments } from '../data/mockData';
+import { leads, students, applications, visaCases, payments, walkInEnquiries, commissions } from '../data/mockData';
 import { testPrepStudents, batches } from '../data/testPrepData';
 
 const Dashboard: React.FC = () => {
@@ -42,6 +46,8 @@ const Dashboard: React.FC = () => {
       { label: 'Visa Approved', value: visaApproved, icon: CheckCircle, color: 'purple', path: '/visa-processing' },
       { label: 'Revenue Collected', value: `$${totalRevenue.toLocaleString()}`, icon: DollarSign, color: 'amber', path: '/finance' },
       { label: 'Pending Payments', value: `$${pendingPayments.toLocaleString()}`, icon: Clock, color: 'rose', path: '/finance' },
+      { label: 'Walk-ins Today', value: walkInEnquiries.filter(w => w.inquiryDate === '2026-03-12').length, icon: UserPlus, color: 'teal', path: '/test-preparation' },
+      { label: 'Lead Conversion', value: `${leads.length > 0 ? Math.round((leads.filter(l => l.status === 'Converted').length / leads.length) * 100) : 0}%`, icon: Target, color: 'cyan', path: '/counseling' },
     ];
   }, []);
 
@@ -147,6 +153,45 @@ const Dashboard: React.FC = () => {
     return { active, completed, dropped, referredToCounseling, runningBatches, occupancyRate, totalEnrolled, totalCapacity, byTestType };
   }, []);
 
+  // 9. Top Universities
+  const topUniversities = useMemo(() => {
+    const uniCounts: Record<string, { apps: number; offers: number; visas: number }> = {};
+    applications.forEach(app => {
+      if (!uniCounts[app.university]) uniCounts[app.university] = { apps: 0, offers: 0, visas: 0 };
+      uniCounts[app.university].apps++;
+      if (['Conditional Offer', 'Unconditional Offer', 'Enrolled'].includes(app.status)) uniCounts[app.university].offers++;
+    });
+    visaCases.forEach(vc => {
+      if (vc.university && uniCounts[vc.university] && vc.currentStage === 'Visa Approved') {
+        uniCounts[vc.university].visas++;
+      }
+    });
+    return Object.entries(uniCounts)
+      .map(([name, stats]) => ({ name, ...stats }))
+      .sort((a, b) => b.apps - a.apps)
+      .slice(0, 5);
+  }, []);
+
+  // 10. Commission Overview
+  const commissionOverview = useMemo(() => {
+    const totalExpected = commissions.reduce((s, c) => s + c.expectedAmount, 0);
+    const totalReceived = commissions.filter(c => c.status === 'Received').reduce((s, c) => s + c.expectedAmount, 0);
+    const pending = commissions.filter(c => c.status === 'Pending').length;
+    const received = commissions.filter(c => c.status === 'Received').length;
+    return { totalExpected, totalReceived, pending, received, total: commissions.length };
+  }, []);
+
+  // 11. Applications by Country
+  const appsByCountry = useMemo(() => {
+    const counts: Record<string, number> = {};
+    applications.forEach(app => {
+      counts[app.country] = (counts[app.country] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .map(([country, count]) => ({ country, count }))
+      .sort((a, b) => b.count - a.count);
+  }, []);
+
   return (
     <div className="space-y-6 pb-12">
       <PageHeader 
@@ -155,7 +200,7 @@ const Dashboard: React.FC = () => {
       />
 
       {/* KPI Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
         {kpis.map((kpi, idx) => (
           <Card 
             key={idx} 
@@ -472,6 +517,113 @@ const Dashboard: React.FC = () => {
             <div className="flex justify-between text-xs font-medium text-gray-500">
               <span>Total Service Fees</span>
               <span className="text-gray-900 dark:text-white font-bold">${revenueStats.totalFees.toLocaleString()}</span>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Top Universities, Applications by Country & Commission Overview */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Top Universities */}
+        <Card className="border-none shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
+              <Building2 className="w-5 h-5 mr-2 text-violet-500" />
+              Top Universities
+            </h3>
+            <button
+              onClick={() => navigate('/reports')}
+              className="text-xs font-bold text-violet-500 hover:text-violet-600 flex items-center gap-1 transition-colors"
+            >
+              View All <ChevronRight className="w-3 h-3" />
+            </button>
+          </div>
+          <div className="space-y-3">
+            {topUniversities.map((uni, idx) => (
+              <div
+                key={uni.name}
+                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="w-6 h-6 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-[10px] font-bold text-violet-600 dark:text-violet-400">
+                    {idx + 1}
+                  </span>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate max-w-[140px]">{uni.name}</span>
+                </div>
+                <div className="flex items-center gap-3 text-[10px] font-bold">
+                  <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-md">{uni.apps} apps</span>
+                  <span className="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-md">{uni.offers} offers</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Applications by Country */}
+        <Card className="border-none shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
+              <Globe className="w-5 h-5 mr-2 text-cyan-500" />
+              Applications by Country
+            </h3>
+          </div>
+          <div className="space-y-3">
+            {appsByCountry.map(({ country, count }) => (
+              <div key={country} className="space-y-1.5">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600 dark:text-gray-400 font-medium">{country}</span>
+                  <span className="text-gray-900 dark:text-white font-bold">{count}</span>
+                </div>
+                <div className="h-2 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-cyan-500 rounded-full transition-all duration-1000"
+                    style={{ width: `${(count / applications.length) * 100}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Commission Overview */}
+        <Card className="border-none shadow-sm">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
+              <Briefcase className="w-5 h-5 mr-2 text-amber-500" />
+              Commission Tracker
+            </h3>
+            <button
+              onClick={() => navigate('/finance')}
+              className="text-xs font-bold text-amber-500 hover:text-amber-600 flex items-center gap-1 transition-colors"
+            >
+              Details <ChevronRight className="w-3 h-3" />
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-5">
+            <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl border border-emerald-100 dark:border-emerald-900/20">
+              <p className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase font-bold tracking-wider">Received</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">${commissionOverview.totalReceived.toLocaleString()}</p>
+            </div>
+            <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-2xl border border-amber-100 dark:border-amber-900/20">
+              <p className="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-bold tracking-wider">Expected</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">${commissionOverview.totalExpected.toLocaleString()}</p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <div className="flex justify-between items-end">
+              <div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Collection Progress</p>
+                <p className="text-2xl font-black text-gray-900 dark:text-white">
+                  {commissionOverview.totalExpected > 0 ? Math.round((commissionOverview.totalReceived / commissionOverview.totalExpected) * 100) : 0}%
+                </p>
+              </div>
+              <p className="text-xs text-gray-400">{commissionOverview.received}/{commissionOverview.total} received</p>
+            </div>
+            <div className="h-3 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-amber-500 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(245,158,11,0.3)]"
+                style={{ width: `${commissionOverview.totalExpected > 0 ? (commissionOverview.totalReceived / commissionOverview.totalExpected) * 100 : 0}%` }}
+              />
             </div>
           </div>
         </Card>

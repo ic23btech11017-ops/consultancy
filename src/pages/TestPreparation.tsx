@@ -451,7 +451,7 @@ const TestPreparation: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {filteredBatches.map((b) => (
-                  <tr key={b.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200">
+                  <tr key={b.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200 cursor-pointer" onClick={() => navigate(`/test-preparation/${b.id}`)}>
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-gray-900 dark:text-white">{b.batchName}</div>
                     </td>

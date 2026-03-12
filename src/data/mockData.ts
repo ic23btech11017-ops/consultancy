@@ -1,7 +1,16 @@
+// ── Shared Types ──
 export type PipelineStage = 'New Inquiry' | 'Initial Counseling' | 'Destination Selection' | 'Course Shortlisting' | 'University Selection' | 'Application Preparation' | 'Application Started' | 'Converted' | 'Lost';
 export type TestStatus = 'Not Taken' | 'Enrolled' | 'Score Available';
 export type LeadSource = 'Walk-in' | 'Marketing Lead' | 'Test Prep Referral' | 'Facebook Ads' | 'Google Search' | 'Instagram' | 'Referral' | 'Direct Walk-in';
+export type Branch = 'Hyderabad' | 'Kolkata' | 'Delhi';
+export type TestType = 'IELTS' | 'PTE' | 'SAT';
+export type WalkInStatus = 'New Inquiry' | 'Demo Scheduled' | 'Demo Attended' | 'Enrolled' | 'Lost';
+export type TestPrepStudentStatus = 'Active' | 'Completed' | 'Dropped';
+export type FeeStatus = 'Paid' | 'Pending' | 'Partial';
+export type BatchStatus = 'Upcoming' | 'Running' | 'Completed';
+export type CommissionStatus = 'Pending' | 'Received';
 
+// ── Interfaces ──
 export interface PipelineLead {
   id: string;
   name: string;
@@ -21,6 +30,71 @@ export interface PipelineLead {
   intakeTarget?: string;
   counselorNotes?: string[];
   academicGoals?: string;
+}
+
+export interface WalkInEnquiry {
+  id: string;
+  name: string;
+  phone: string;
+  branch: Branch;
+  interestedTest: TestType;
+  inquiryDate: string;
+  assignedCounselor: string;
+  followUpDate: string;
+  notes: string;
+  status: WalkInStatus;
+}
+
+export interface TestPrepStudent {
+  id: string;
+  studentId: string;
+  studentName: string;
+  testType: TestType;
+  branch: Branch;
+  batch: string;
+  trainer: string;
+  startDate: string;
+  endDate: string;
+  feeStatus: FeeStatus;
+  currentScore: string;
+  targetScore: string;
+  status: TestPrepStudentStatus;
+  referredToCounseling: boolean;
+}
+
+export interface Batch {
+  id: string;
+  batchName: string;
+  testType: TestType;
+  branch: Branch;
+  trainer: string;
+  startDate: string;
+  endDate: string;
+  capacity: number;
+  studentsEnrolled: number;
+  status: BatchStatus;
+}
+
+export interface Commission {
+  id: string;
+  studentId: string;
+  studentName: string;
+  university: string;
+  partnerId: string;
+  commissionRate: number;
+  expectedAmount: number;
+  status: CommissionStatus;
+}
+
+export interface Campaign {
+  id: string;
+  name: string;
+  source: LeadSource;
+  startDate: string;
+  endDate: string;
+  budget: number;
+  leadsGenerated: number;
+  conversions: number;
 }
 
 export const leads: PipelineLead[] = [
@@ -251,7 +325,9 @@ export const students = [
     highestQualification: "Bachelors",
     targetLevel: "Masters",
     assignedCounsellor: "Ravi Mehta",
-    status: "Visa In Process"
+    status: "Visa In Process",
+    branch: "Hyderabad" as Branch,
+    leadSource: "Walk-in" as LeadSource,
   },
   {
     id: "ST002",
@@ -262,7 +338,9 @@ export const students = [
     highestQualification: "12th",
     targetLevel: "Bachelors",
     assignedCounsellor: "John Doe",
-    status: "Visa In Process"
+    status: "Visa In Process",
+    branch: "Kolkata" as Branch,
+    leadSource: "Google Search" as LeadSource,
   },
   {
     id: "ST003",
@@ -273,7 +351,9 @@ export const students = [
     highestQualification: "Bachelors",
     targetLevel: "Masters",
     assignedCounsellor: "Ravi Mehta",
-    status: "Visa In Process"
+    status: "Visa In Process",
+    branch: "Delhi" as Branch,
+    leadSource: "Referral" as LeadSource,
   },
   {
     id: "ST004",
@@ -284,7 +364,9 @@ export const students = [
     highestQualification: "Masters",
     targetLevel: "PhD",
     assignedCounsellor: "Jane Smith",
-    status: "Visa Approved"
+    status: "Visa Approved",
+    branch: "Hyderabad" as Branch,
+    leadSource: "Facebook Ads" as LeadSource,
   },
   {
     id: "ST005",
@@ -295,7 +377,9 @@ export const students = [
     highestQualification: "Bachelors",
     targetLevel: "Masters",
     assignedCounsellor: "Ravi Mehta",
-    status: "Documents Pending"
+    status: "Documents Pending",
+    branch: "Hyderabad" as Branch,
+    leadSource: "Direct Walk-in" as LeadSource,
   },
   {
     id: "ST006",
@@ -306,7 +390,9 @@ export const students = [
     highestQualification: "12th",
     targetLevel: "Diploma",
     assignedCounsellor: "Anjali Rao",
-    status: "Active"
+    status: "Active",
+    branch: "Hyderabad" as Branch,
+    leadSource: "Instagram" as LeadSource,
   },
   {
     id: "ST007",
@@ -317,7 +403,9 @@ export const students = [
     highestQualification: "12th",
     targetLevel: "Bachelors",
     assignedCounsellor: "Ravi Mehta",
-    status: "Active"
+    status: "Active",
+    branch: "Delhi" as Branch,
+    leadSource: "Walk-in" as LeadSource,
   },
   {
     id: "ST008",
@@ -328,7 +416,9 @@ export const students = [
     highestQualification: "Bachelors",
     targetLevel: "Masters",
     assignedCounsellor: "Anjali Rao",
-    status: "Active"
+    status: "Active",
+    branch: "Delhi" as Branch,
+    leadSource: "Marketing Lead" as LeadSource,
   },
   {
     id: "ST009",
@@ -339,7 +429,9 @@ export const students = [
     highestQualification: "12th",
     targetLevel: "Bachelors",
     assignedCounsellor: "John Doe",
-    status: "Active"
+    status: "Active",
+    branch: "Kolkata" as Branch,
+    leadSource: "Referral" as LeadSource,
   },
   {
     id: "ST010",
@@ -350,7 +442,9 @@ export const students = [
     highestQualification: "Bachelors",
     targetLevel: "Masters",
     assignedCounsellor: "Anjali Rao",
-    status: "Application In Progress"
+    status: "Application In Progress",
+    branch: "Kolkata" as Branch,
+    leadSource: "Marketing Lead" as LeadSource,
   }
 ];
 
@@ -362,7 +456,9 @@ export const applications = [
     course: "MSc Computer Science",
     country: "Canada",
     intake: "Fall 2026",
-    status: "Submitted"
+    year: 2026,
+    status: "Submitted",
+    partnerId: "PRT002",
   },
   {
     id: "APP002",
@@ -371,7 +467,9 @@ export const applications = [
     course: "BBA",
     country: "Australia",
     intake: "Fall 2026",
-    status: "Draft"
+    year: 2026,
+    status: "Draft",
+    partnerId: "PRT003",
   },
   {
     id: "APP003",
@@ -380,7 +478,9 @@ export const applications = [
     course: "MS Data Science",
     country: "USA",
     intake: "Spring 2026",
-    status: "Submitted"
+    year: 2026,
+    status: "Submitted",
+    partnerId: "PRT002",
   },
   {
     id: "APP004",
@@ -389,7 +489,9 @@ export const applications = [
     course: "PhD in Physics",
     country: "UK",
     intake: "Fall 2026",
-    status: "Offer Received"
+    year: 2026,
+    status: "Offer Received",
+    partnerId: "PRT001",
   },
   {
     id: "APP005",
@@ -398,7 +500,8 @@ export const applications = [
     course: "MSc Mechanical Engineering",
     country: "Germany",
     intake: "Winter 2026",
-    status: "Submitted"
+    year: 2026,
+    status: "Submitted",
   },
   {
     id: "APP006",
@@ -407,7 +510,9 @@ export const applications = [
     course: "Diploma in IT",
     country: "Australia",
     intake: "Spring 2026",
-    status: "Accepted"
+    year: 2026,
+    status: "Accepted",
+    partnerId: "PRT003",
   },
   {
     id: "APP007",
@@ -416,7 +521,9 @@ export const applications = [
     course: "MS Data Science",
     country: "Canada",
     intake: "Fall 2026",
-    status: "Submitted"
+    year: 2026,
+    status: "Submitted",
+    partnerId: "PRT002",
   }
 ];
 
@@ -426,6 +533,8 @@ export const visaCases = [
     studentId: "ST001",
     studentName: "Rahul Kumar",
     country: "Canada",
+    university: "University of Toronto",
+    intake: "Fall 2026",
     currentStage: "Visa Form Filled",
     appointmentDate: "2026-03-05"
   },
@@ -434,6 +543,8 @@ export const visaCases = [
     studentId: "ST002",
     studentName: "Ananya Sharma",
     country: "Australia",
+    university: "University of Melbourne",
+    intake: "Fall 2026",
     currentStage: "Documents Verified",
     appointmentDate: "2026-03-10"
   },
@@ -442,6 +553,8 @@ export const visaCases = [
     studentId: "ST004",
     studentName: "Priya Patel",
     country: "UK",
+    university: "University of Oxford",
+    intake: "Fall 2026",
     currentStage: "Visa Approved",
     visaResult: "Approved"
   },
@@ -450,6 +563,8 @@ export const visaCases = [
     studentId: "ST003",
     studentName: "Vikram Singh",
     country: "USA",
+    university: "Arizona State University",
+    intake: "Spring 2026",
     currentStage: "Appointment Booked",
     appointmentDate: "2026-03-15"
   }
@@ -512,16 +627,16 @@ export const partners = [
     name: "Global Education Services",
     country: "UK",
     commissionPercentage: 15,
-    assignedStudents: ["ST001", "ST004"],
-    commissionReceived: 2500
+    assignedStudents: ["ST004"],
+    commissionReceived: 0
   },
   {
     id: "PRT002",
     name: "Overseas Pathway Ltd",
     country: "Canada",
     commissionPercentage: 10,
-    assignedStudents: ["ST003"],
-    commissionReceived: 0
+    assignedStudents: ["ST001", "ST003", "ST010"],
+    commissionReceived: 1500
   },
   {
     id: "PRT003",
@@ -529,6 +644,279 @@ export const partners = [
     country: "Australia",
     commissionPercentage: 12,
     assignedStudents: ["ST002", "ST006"],
-    commissionReceived: 1200
+    commissionReceived: 1800
   }
+];
+
+// ── Commissions ──
+export const commissions: Commission[] = [
+  { id: 'COM001', studentId: 'ST001', studentName: 'Rahul Kumar', university: 'University of Toronto', partnerId: 'PRT002', commissionRate: 10, expectedAmount: 1500, status: 'Received' },
+  { id: 'COM002', studentId: 'ST003', studentName: 'Vikram Singh', university: 'Arizona State University', partnerId: 'PRT002', commissionRate: 12, expectedAmount: 2400, status: 'Pending' },
+  { id: 'COM003', studentId: 'ST004', studentName: 'Priya Patel', university: 'University of Oxford', partnerId: 'PRT001', commissionRate: 8, expectedAmount: 3200, status: 'Pending' },
+  { id: 'COM004', studentId: 'ST006', studentName: 'Sneha Gupta', university: 'Monash University', partnerId: 'PRT003', commissionRate: 12, expectedAmount: 1800, status: 'Received' },
+  { id: 'COM005', studentId: 'ST010', studentName: 'Karthik Nair', university: 'University of British Columbia', partnerId: 'PRT002', commissionRate: 10, expectedAmount: 2000, status: 'Pending' },
+];
+
+// ── Campaigns (Marketing / Lead Source) ──
+export const campaigns: Campaign[] = [
+  { id: 'CMP001', name: 'Spring 2026 Facebook Campaign', source: 'Facebook Ads', startDate: '2025-11-01', endDate: '2026-02-28', budget: 50000, leadsGenerated: 200, conversions: 80 },
+  { id: 'CMP002', name: 'Google Ads - Masters Abroad', source: 'Google Search', startDate: '2025-12-01', endDate: '2026-03-31', budget: 75000, leadsGenerated: 180, conversions: 65 },
+  { id: 'CMP003', name: 'Instagram Study Abroad Series', source: 'Instagram', startDate: '2026-01-01', endDate: '2026-04-30', budget: 30000, leadsGenerated: 120, conversions: 40 },
+  { id: 'CMP004', name: 'Referral Bonus Program', source: 'Referral', startDate: '2025-10-01', endDate: '2026-06-30', budget: 20000, leadsGenerated: 90, conversions: 55 },
+  { id: 'CMP005', name: 'Walk-in Open House Events', source: 'Walk-in', startDate: '2026-01-15', endDate: '2026-03-15', budget: 15000, leadsGenerated: 75, conversions: 35 },
+  { id: 'CMP006', name: 'Direct Walk-in Promotions', source: 'Direct Walk-in', startDate: '2026-02-01', endDate: '2026-05-31', budget: 10000, leadsGenerated: 50, conversions: 20 },
+  { id: 'CMP007', name: 'Test Prep Cross-Sell Campaign', source: 'Test Prep Referral', startDate: '2025-11-15', endDate: '2026-04-15', budget: 25000, leadsGenerated: 60, conversions: 30 },
+  { id: 'CMP008', name: 'Marketing Lead Nurture Funnel', source: 'Marketing Lead', startDate: '2026-01-01', endDate: '2026-06-30', budget: 40000, leadsGenerated: 150, conversions: 50 },
+];
+
+// ── Walk-in Enquiries ──
+export let walkInEnquiries: WalkInEnquiry[] = [
+  {
+    id: 'WI001',
+    name: 'Rahul Kumar',
+    phone: '+91 98765 43210',
+    branch: 'Hyderabad',
+    interestedTest: 'IELTS',
+    inquiryDate: '2026-03-12',
+    assignedCounselor: 'Ravi Mehta',
+    followUpDate: '2026-03-14',
+    notes: 'Interested in morning batch',
+    status: 'New Inquiry',
+  },
+  {
+    id: 'WI002',
+    name: 'Priya Patel',
+    phone: '+91 87654 32109',
+    branch: 'Kolkata',
+    interestedTest: 'IELTS',
+    inquiryDate: '2026-03-12',
+    assignedCounselor: 'Anjali Rao',
+    followUpDate: '2026-03-15',
+    notes: 'Wants weekend classes',
+    status: 'Demo Scheduled',
+  },
+  {
+    id: 'WI003',
+    name: 'Vikram Singh',
+    phone: '+91 76543 21098',
+    branch: 'Delhi',
+    interestedTest: 'SAT',
+    inquiryDate: '2026-03-11',
+    assignedCounselor: 'Ravi Mehta',
+    followUpDate: '2026-03-13',
+    notes: 'Planning to apply for Fall 2027',
+    status: 'Demo Attended',
+  },
+  {
+    id: 'WI004',
+    name: 'Sneha Gupta',
+    phone: '+91 65432 10987',
+    branch: 'Hyderabad',
+    interestedTest: 'IELTS',
+    inquiryDate: '2026-03-10',
+    assignedCounselor: 'Anjali Rao',
+    followUpDate: '2026-03-12',
+    notes: 'Converted to student',
+    status: 'Enrolled',
+  },
+  {
+    id: 'WI005',
+    name: 'Aditya Rao',
+    phone: '+91 77654 32100',
+    branch: 'Kolkata',
+    interestedTest: 'SAT',
+    inquiryDate: '2026-03-09',
+    assignedCounselor: 'Ravi Mehta',
+    followUpDate: '2026-03-11',
+    notes: 'Did not respond after demo',
+    status: 'Lost',
+  },
+  {
+    id: 'WI006',
+    name: 'Meera Joshi',
+    phone: '+91 91234 56700',
+    branch: 'Delhi',
+    interestedTest: 'IELTS',
+    inquiryDate: '2026-03-12',
+    assignedCounselor: 'Ravi Mehta',
+    followUpDate: '2026-03-14',
+    notes: 'Walk-in today, very interested',
+    status: 'New Inquiry',
+  },
+];
+
+// ── Test Prep Students ──
+export let testPrepStudents: TestPrepStudent[] = [
+  {
+    id: 'TPS001',
+    studentId: 'ST001',
+    studentName: 'Rahul Kumar',
+    testType: 'IELTS',
+    branch: 'Hyderabad',
+    batch: 'IELTS Morning Batch - Mar',
+    trainer: 'Sarah',
+    startDate: '2026-02-01',
+    endDate: '2026-04-01',
+    feeStatus: 'Paid',
+    currentScore: '7.0',
+    targetScore: '7.5',
+    status: 'Active',
+    referredToCounseling: true,
+  },
+  {
+    id: 'TPS002',
+    studentId: 'ST002',
+    studentName: 'Ananya Sharma',
+    testType: 'PTE',
+    branch: 'Kolkata',
+    batch: 'PTE Evening Batch - Mar',
+    trainer: 'David',
+    startDate: '2026-02-15',
+    endDate: '2026-04-15',
+    feeStatus: 'Partial',
+    currentScore: '62',
+    targetScore: '79',
+    status: 'Active',
+    referredToCounseling: false,
+  },
+  {
+    id: 'TPS003',
+    studentId: 'ST006',
+    studentName: 'Sneha Gupta',
+    testType: 'IELTS',
+    branch: 'Hyderabad',
+    batch: 'IELTS Morning Batch - Mar',
+    trainer: 'Sarah',
+    startDate: '2026-02-01',
+    endDate: '2026-04-01',
+    feeStatus: 'Paid',
+    currentScore: '7.5',
+    targetScore: '7.0',
+    status: 'Completed',
+    referredToCounseling: true,
+  },
+  {
+    id: 'TPS004',
+    studentId: 'ST007',
+    studentName: 'Arun Menon',
+    testType: 'SAT',
+    branch: 'Delhi',
+    batch: 'SAT Weekend Batch - Feb',
+    trainer: 'Emily',
+    startDate: '2026-01-15',
+    endDate: '2026-03-15',
+    feeStatus: 'Pending',
+    currentScore: '1350',
+    targetScore: '1500',
+    status: 'Active',
+    referredToCounseling: false,
+  },
+  {
+    id: 'TPS005',
+    studentId: 'ST008',
+    studentName: 'Kavya Nair',
+    testType: 'PTE',
+    branch: 'Delhi',
+    batch: 'PTE Morning Batch - Feb',
+    trainer: 'David',
+    startDate: '2026-01-10',
+    endDate: '2026-03-10',
+    feeStatus: 'Paid',
+    currentScore: '',
+    targetScore: '65',
+    status: 'Dropped',
+    referredToCounseling: false,
+  },
+  {
+    id: 'TPS006',
+    studentId: 'ST009',
+    studentName: 'Rohan Das',
+    testType: 'IELTS',
+    branch: 'Kolkata',
+    batch: 'IELTS Evening Batch - Mar',
+    trainer: 'Sarah',
+    startDate: '2026-03-01',
+    endDate: '2026-05-01',
+    feeStatus: 'Paid',
+    currentScore: '6.0',
+    targetScore: '7.0',
+    status: 'Active',
+    referredToCounseling: false,
+  },
+];
+
+// ── Batches ──
+export const batches: Batch[] = [
+  {
+    id: 'B001',
+    batchName: 'IELTS Morning Batch - Mar',
+    testType: 'IELTS',
+    branch: 'Hyderabad',
+    trainer: 'Sarah',
+    startDate: '2026-02-01',
+    endDate: '2026-04-01',
+    capacity: 20,
+    studentsEnrolled: 14,
+    status: 'Running',
+  },
+  {
+    id: 'B002',
+    batchName: 'PTE Evening Batch - Mar',
+    testType: 'PTE',
+    branch: 'Kolkata',
+    trainer: 'David',
+    startDate: '2026-02-15',
+    endDate: '2026-04-15',
+    capacity: 15,
+    studentsEnrolled: 10,
+    status: 'Running',
+  },
+  {
+    id: 'B003',
+    batchName: 'SAT Weekend Batch - Feb',
+    testType: 'SAT',
+    branch: 'Delhi',
+    trainer: 'Emily',
+    startDate: '2026-01-15',
+    endDate: '2026-03-15',
+    capacity: 12,
+    studentsEnrolled: 8,
+    status: 'Running',
+  },
+  {
+    id: 'B004',
+    batchName: 'IELTS Evening Batch - Mar',
+    testType: 'IELTS',
+    branch: 'Kolkata',
+    trainer: 'Sarah',
+    startDate: '2026-03-01',
+    endDate: '2026-05-01',
+    capacity: 20,
+    studentsEnrolled: 6,
+    status: 'Running',
+  },
+  {
+    id: 'B005',
+    batchName: 'PTE Morning Batch - Apr',
+    testType: 'PTE',
+    branch: 'Hyderabad',
+    trainer: 'David',
+    startDate: '2026-04-01',
+    endDate: '2026-06-01',
+    capacity: 15,
+    studentsEnrolled: 0,
+    status: 'Upcoming',
+  },
+  {
+    id: 'B006',
+    batchName: 'IELTS Jan Batch',
+    testType: 'IELTS',
+    branch: 'Delhi',
+    trainer: 'Sarah',
+    startDate: '2026-01-05',
+    endDate: '2026-02-28',
+    capacity: 18,
+    studentsEnrolled: 18,
+    status: 'Completed',
+  },
 ];

@@ -1,4 +1,4 @@
-import { students as INITIAL_STUDENTS } from './mockData';
+import { students as INITIAL_STUDENTS, type Branch, type LeadSource } from './mockData';
 
 export type StudentStatus = 'Active' | 'Application In Progress' | 'Visa In Process' | 'Completed';
 export type Qualification = '12th' | 'Bachelors' | 'Masters';
@@ -14,6 +14,8 @@ export interface Student {
   country: string;
   assignedCounsellor: string;
   status: StudentStatus;
+  branch: Branch;
+  leadSource: LeadSource;
 }
 
 export let MOCK_STUDENTS: Student[] = INITIAL_STUDENTS as Student[];

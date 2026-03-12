@@ -19,14 +19,7 @@ import {
 import { PageHeader } from '../components/PageHeader';
 import { Card } from '../components/Card';
 import { Badge } from '../components/Badge';
-import { payments as initialPayments, students } from '../data/mockData';
-
-// Mock Commissions Data
-const initialCommissions = [
-  { id: 'COM001', studentId: 'ST001', studentName: 'Rahul Kumar', university: 'University of Toronto', commissionRate: 10, expectedAmount: 1500, status: 'Received' },
-  { id: 'COM002', studentId: 'ST003', studentName: 'Vikram Singh', university: 'Arizona State University', commissionRate: 12, expectedAmount: 2400, status: 'Pending' },
-  { id: 'COM003', studentId: 'ST004', studentName: 'Priya Patel', university: 'University of Oxford', commissionRate: 8, expectedAmount: 3200, status: 'Pending' },
-];
+import { payments as initialPayments, students, commissions as initialCommissions } from '../data/mockData';
 
 const Finance: React.FC = () => {
   const [payments, setPayments] = useState(initialPayments);
