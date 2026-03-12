@@ -61,7 +61,7 @@ const Applications: React.FC = () => {
   // New Application Form State
   const [newApp, setNewApp] = useState<Partial<Application>>({
     status: 'Draft',
-    intake: 'Fall 2024',
+    intake: 'Fall 2026',
   });
 
   const stats = useMemo(() => {

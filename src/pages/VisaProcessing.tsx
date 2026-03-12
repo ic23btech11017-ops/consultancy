@@ -89,10 +89,10 @@ const VisaProcessing: React.FC = () => {
     });
   }, [visaCases, searchQuery, countryFilter, resultFilter]);
 
-  // Upcoming appointments (Next 7 days from current date: 2026-03-01)
+  // Upcoming appointments (Next 7 days from current date)
   const upcomingAppointments = useMemo(() => {
-    const today = new Date('2026-03-01'); // Using current local time from metadata
-    const nextWeek = new Date('2026-03-01');
+    const today = new Date('2026-03-12');
+    const nextWeek = new Date('2026-03-12');
     nextWeek.setDate(today.getDate() + 7);
     
     return visaCases.filter(c => {
@@ -226,7 +226,7 @@ const VisaProcessing: React.FC = () => {
               
               <div className="space-y-4 min-h-[600px] bg-gray-100/30 dark:bg-gray-900/40 rounded-2xl p-3 border border-gray-200/50 dark:border-gray-800/50">
                 {stageStudents.map(studentCase => {
-                  const today = new Date('2026-03-01');
+                  const today = new Date('2026-03-12');
                   const apptDate = studentCase.appointmentDate ? new Date(studentCase.appointmentDate) : null;
                   const isUpcoming = apptDate && (
                     (apptDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24) <= 7 &&

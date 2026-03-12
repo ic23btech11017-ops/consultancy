@@ -27,7 +27,7 @@ export const leads: PipelineLead[] = [
   {
     id: '1',
     name: 'Arjun Sharma',
-    phone: '+91 98765 43210',
+    phone: '+91 91122 33445',
     email: 'arjun.s@example.com',
     source: 'Facebook Ads',
     interestedCountry: '',
@@ -59,7 +59,7 @@ export const leads: PipelineLead[] = [
   {
     id: '3',
     name: 'Rahul Verma',
-    phone: '+91 76543 21098',
+    phone: '+91 70012 34567',
     email: 'rahul.v@example.com',
     source: 'Referral',
     interestedCountry: 'USA',
@@ -87,7 +87,7 @@ export const leads: PipelineLead[] = [
     status: 'Converted',
     studentId: 'ST006',
     testStatus: 'Score Available',
-    testScore: '6.5',
+    testScore: '7.5',
     testType: 'IELTS',
     preferredCourses: ['Diploma in IT'],
     budgetRange: '₹8-12 Lakhs',
@@ -98,7 +98,7 @@ export const leads: PipelineLead[] = [
   {
     id: '5',
     name: 'Vikram Singh',
-    phone: '+91 54321 09876',
+    phone: '+91 55443 21890',
     email: 'vikram.s@example.com',
     source: 'Direct Walk-in',
     interestedCountry: 'Germany',
@@ -140,7 +140,7 @@ export const leads: PipelineLead[] = [
     targetLevel: 'Masters',
     assignedCounsellor: 'Anjali Rao',
     status: 'Application Started',
-    studentId: 'ST003',
+    studentId: 'ST010',
     testStatus: 'Score Available',
     testScore: '315',
     testType: 'GRE',
@@ -262,7 +262,7 @@ export const students = [
     highestQualification: "12th",
     targetLevel: "Bachelors",
     assignedCounsellor: "John Doe",
-    status: "Active"
+    status: "Visa In Process"
   },
   {
     id: "ST003",
@@ -273,7 +273,7 @@ export const students = [
     highestQualification: "Bachelors",
     targetLevel: "Masters",
     assignedCounsellor: "Ravi Mehta",
-    status: "Application Submitted"
+    status: "Visa In Process"
   },
   {
     id: "ST004",
@@ -300,12 +300,12 @@ export const students = [
   {
     id: "ST006",
     name: "Sneha Gupta",
-    phone: "+91 94567 89012",
+    phone: "+91 65432 10987",
     email: "sneha@example.com",
     country: "India",
     highestQualification: "12th",
-    targetLevel: "Bachelors",
-    assignedCounsellor: "John Doe",
+    targetLevel: "Diploma",
+    assignedCounsellor: "Anjali Rao",
     status: "Active"
   },
   {
@@ -340,6 +340,17 @@ export const students = [
     targetLevel: "Bachelors",
     assignedCounsellor: "John Doe",
     status: "Active"
+  },
+  {
+    id: "ST010",
+    name: "Karthik Nair",
+    phone: "+91 88234 56789",
+    email: "karthik.n@example.com",
+    country: "India",
+    highestQualification: "Bachelors",
+    targetLevel: "Masters",
+    assignedCounsellor: "Anjali Rao",
+    status: "Application In Progress"
   }
 ];
 
@@ -350,7 +361,7 @@ export const applications = [
     university: "University of Toronto",
     course: "MSc Computer Science",
     country: "Canada",
-    intake: "Fall 2025",
+    intake: "Fall 2026",
     status: "Submitted"
   },
   {
@@ -359,7 +370,7 @@ export const applications = [
     university: "University of Melbourne",
     course: "BBA",
     country: "Australia",
-    intake: "Fall 2025",
+    intake: "Fall 2026",
     status: "Draft"
   },
   {
@@ -368,7 +379,7 @@ export const applications = [
     university: "Arizona State University",
     course: "MS Data Science",
     country: "USA",
-    intake: "Spring 2025",
+    intake: "Spring 2026",
     status: "Submitted"
   },
   {
@@ -377,7 +388,7 @@ export const applications = [
     university: "University of Oxford",
     course: "PhD in Physics",
     country: "UK",
-    intake: "Fall 2025",
+    intake: "Fall 2026",
     status: "Offer Received"
   },
   {
@@ -386,17 +397,26 @@ export const applications = [
     university: "TU Munich",
     course: "MSc Mechanical Engineering",
     country: "Germany",
-    intake: "Winter 2025",
-    status: "In Review"
+    intake: "Winter 2026",
+    status: "Submitted"
   },
   {
     id: "APP006",
     studentId: "ST006",
     university: "Monash University",
-    course: "Bachelor of IT",
+    course: "Diploma in IT",
     country: "Australia",
-    intake: "Fall 2025",
-    status: "Draft"
+    intake: "Spring 2026",
+    status: "Accepted"
+  },
+  {
+    id: "APP007",
+    studentId: "ST010",
+    university: "University of British Columbia",
+    course: "MS Data Science",
+    country: "Canada",
+    intake: "Fall 2026",
+    status: "Submitted"
   }
 ];
 
@@ -430,8 +450,8 @@ export const visaCases = [
     studentId: "ST003",
     studentName: "Vikram Singh",
     country: "USA",
-    currentStage: "Appointment Scheduled",
-    appointmentDate: "2026-03-02"
+    currentStage: "Appointment Booked",
+    appointmentDate: "2026-03-15"
   }
 ];
 
@@ -490,7 +510,7 @@ export const partners = [
   {
     id: "PRT001",
     name: "Global Education Services",
-    country: "United Kingdom",
+    country: "UK",
     commissionPercentage: 15,
     assignedStudents: ["ST001", "ST004"],
     commissionReceived: 2500

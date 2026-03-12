@@ -18,7 +18,7 @@ import { leads, students, applications, visaCases, payments } from '../data/mock
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
-  const today = new Date('2026-03-01');
+  const today = new Date('2026-03-12');
 
   // 1. KPI Calculations
   const kpis = useMemo(() => {
