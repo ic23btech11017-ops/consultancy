@@ -25,7 +25,7 @@ import {
   FileText,
   MapPin,
 } from 'lucide-react';
-import { leads as INITIAL_LEADS, applications as APPS_DATA, type PipelineStage, type PipelineLead } from '../data/mockData';
+import { leads as INITIAL_LEADS, applications as APPS_DATA, type PipelineStage, type PipelineLead, LEAD_SOURCES } from '../data/mockData';
 
 const PIPELINE_STAGES: PipelineStage[] = [
   'New Inquiry',
@@ -65,6 +65,7 @@ const CounselingPipeline: React.FC = () => {
   const [filterLevel, setFilterLevel] = useState('All');
   const [filterTestStatus, setFilterTestStatus] = useState('All');
   const [filterCounselor, setFilterCounselor] = useState('All');
+  const [filterSource, setFilterSource] = useState('All');
 
   // Modals
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -95,9 +96,10 @@ const CounselingPipeline: React.FC = () => {
       const matchesLevel = filterLevel === 'All' || lead.targetLevel === filterLevel;
       const matchesTest = filterTestStatus === 'All' || lead.testStatus === filterTestStatus;
       const matchesCounselor = filterCounselor === 'All' || lead.assignedCounsellor === filterCounselor;
-      return matchesSearch && matchesCountry && matchesLevel && matchesTest && matchesCounselor;
+      const matchesSource = filterSource === 'All' || lead.source === filterSource;
+      return matchesSearch && matchesCountry && matchesLevel && matchesTest && matchesCounselor && matchesSource;
     });
-  }, [leads, searchQuery, filterCountry, filterLevel, filterTestStatus, filterCounselor]);
+  }, [leads, searchQuery, filterCountry, filterLevel, filterTestStatus, filterCounselor, filterSource]);
 
   // Metrics
   const metrics = useMemo(() => {
@@ -333,7 +335,7 @@ const CounselingPipeline: React.FC = () => {
         </div>
 
         {showFilters && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
             <div className="space-y-1.5">
               <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Destination</label>
               <select
@@ -378,6 +380,17 @@ const CounselingPipeline: React.FC = () => {
               >
                 <option value="All">All Counselors</option>
                 {COUNSELORS.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Lead Source</label>
+              <select
+                value={filterSource}
+                onChange={(e) => setFilterSource(e.target.value)}
+                className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm dark:text-white"
+              >
+                <option value="All">All Sources</option>
+                {LEAD_SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
           </div>
@@ -441,7 +454,14 @@ const CounselingPipeline: React.FC = () => {
                     </div>
 
                     {/* Test Status Badge */}
-                    <div className="mb-2.5">{getTestBadge(lead)}</div>
+                    <div className="mb-2">{getTestBadge(lead)}</div>
+
+                    {/* Source Badge */}
+                    <div className="mb-2.5">
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                        {lead.source}
+                      </span>
+                    </div>
 
                     {/* Action Buttons */}
                     <div className="flex flex-wrap gap-1.5 pt-2 border-t border-gray-50 dark:border-gray-700/50">
@@ -539,13 +559,7 @@ const CounselingPipeline: React.FC = () => {
                   <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Source</label>
                   <select value={newLead.source} onChange={e => setNewLead({ ...newLead, source: e.target.value as any })}
                     className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm dark:text-white">
-                    <option value="Walk-in">Walk-in</option>
-                    <option value="Marketing Lead">Marketing Lead</option>
-                    <option value="Test Prep Referral">Test Prep Referral</option>
-                    <option value="Facebook Ads">Facebook Ads</option>
-                    <option value="Google Search">Google Search</option>
-                    <option value="Instagram">Instagram</option>
-                    <option value="Referral">Referral</option>
+                    {LEAD_SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div className="space-y-1.5">

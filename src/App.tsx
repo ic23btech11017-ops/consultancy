@@ -19,6 +19,7 @@ import TestPreparation from './pages/TestPreparation';
 import BatchProfile from './pages/BatchProfile';
 import MyProfile from './pages/MyProfile';
 import HelpSupport from './pages/HelpSupport';
+import Marketing from './pages/Marketing';
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
+            <Route path="marketing" element={<Marketing />} />
             <Route path="counseling" element={<CounselingPipeline />} />
             <Route path="counseling/:id" element={<LeadProfile />} />
             <Route path="students" element={<Students />} />

@@ -12,10 +12,12 @@ import {
   Settings,
   GraduationCap,
   GitBranch,
+  Megaphone,
 } from 'lucide-react';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Marketing', href: '/marketing', icon: Megaphone },
   { name: 'Counseling Pipeline', href: '/counseling', icon: GitBranch },
   { name: 'Students', href: '/students', icon: UserRound },
   { name: 'Test Preparation', href: '/test-preparation', icon: GraduationCap },

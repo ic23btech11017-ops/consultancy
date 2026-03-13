@@ -11,8 +11,10 @@ import {
   MoreVertical, 
   Eye, 
   CheckCircle2, 
-  X 
+  X,
+  Lock,
 } from 'lucide-react';
+import { leads as INITIAL_LEADS, LEAD_SOURCES, type LeadSource } from '../data/mockData';
 
 type LeadStatus = 'New' | 'Contacted' | 'Counselling Done' | 'Converted' | 'Dropped';
 
@@ -21,14 +23,12 @@ interface Lead {
   name: string;
   phone: string;
   email: string;
-  source: string;
+  source: LeadSource;
   interestedCountry: string;
   targetLevel: string;
   assignedCounsellor: string;
   status: LeadStatus;
 }
-
-import { leads as INITIAL_LEADS } from '../data/mockData';
 
 const Leads: React.FC = () => {
   const navigate = useNavigate();
@@ -36,6 +36,7 @@ const Leads: React.FC = () => {
   const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<LeadStatus | 'All'>('All');
+  const [sourceFilter, setSourceFilter] = useState<LeadSource | 'All'>('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Form State
@@ -43,7 +44,7 @@ const Leads: React.FC = () => {
     name: '',
     phone: '',
     email: '',
-    source: 'Facebook Ads',
+    source: 'Walk-in',
     interestedCountry: 'UK',
     targetLevel: 'Masters',
     assignedCounsellor: 'Ravi Mehta',
@@ -52,7 +53,8 @@ const Leads: React.FC = () => {
   const filteredLeads = leads.filter((lead) => {
     const matchesSearch = lead.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'All' || lead.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesSource = sourceFilter === 'All' || lead.source === sourceFilter;
+    return matchesSearch && matchesStatus && matchesSource;
   });
 
   const handleAddLead = (e: React.FormEvent) => {
@@ -68,7 +70,7 @@ const Leads: React.FC = () => {
       name: '',
       phone: '',
       email: '',
-      source: 'Facebook Ads',
+      source: 'Walk-in',
       interestedCountry: 'UK',
       targetLevel: 'Masters',
       assignedCounsellor: 'Ravi Mehta',
@@ -130,6 +132,14 @@ const Leads: React.FC = () => {
             <option value="All">All Statuses</option>
             {statuses.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
+          <select
+            value={sourceFilter}
+            onChange={(e) => setSourceFilter(e.target.value as any)}
+            className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 dark:text-white"
+          >
+            <option value="All">All Sources</option>
+            {LEAD_SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
         </div>
 
         <div className="flex items-center bg-gray-100 dark:bg-gray-900 p-1 rounded-lg">
@@ -167,6 +177,7 @@ const Leads: React.FC = () => {
                 <tr className="bg-gray-50 dark:bg-gray-900/50 border-bottom border-gray-100 dark:border-gray-700">
                   <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
                   <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Phone</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Source</th>
                   <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Country</th>
                   <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Target Level</th>
                   <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Counsellor</th>
@@ -186,6 +197,11 @@ const Leads: React.FC = () => {
                       <div className="text-xs text-gray-500 dark:text-gray-400">{lead.email}</div>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{lead.phone}</td>
+                    <td className="px-6 py-4">
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300">
+                        {lead.source}
+                      </span>
+                    </td>
                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{lead.interestedCountry}</td>
                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{lead.targetLevel}</td>
                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{lead.assignedCounsellor}</td>
@@ -318,18 +334,21 @@ const Leads: React.FC = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Lead Source</label>
+                  <label className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                    Lead Source
+                    <Lock className="w-3 h-3 text-amber-500" title="Source is immutable after creation" />
+                  </label>
                   <select 
+                    required
                     value={newLead.source}
-                    onChange={(e) => setNewLead({ ...newLead, source: e.target.value })}
+                    onChange={(e) => setNewLead({ ...newLead, source: e.target.value as LeadSource })}
                     className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 dark:text-white"
                   >
-                    <option value="Facebook Ads">Facebook Ads</option>
-                    <option value="Google Search">Google Search</option>
-                    <option value="Instagram">Instagram</option>
-                    <option value="Referral">Referral</option>
-                    <option value="Direct Walk-in">Direct Walk-in</option>
+                    {LEAD_SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
+                  <p className="text-[10px] text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                    <Lock className="w-2.5 h-2.5" /> Source is locked after creation. Admin correction required to change.
+                  </p>
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Interested Country</label>

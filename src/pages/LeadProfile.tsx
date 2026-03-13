@@ -28,8 +28,10 @@ import {
   Target,
   DollarSign,
   Calendar,
+  Lock,
+  ShieldAlert,
 } from 'lucide-react';
-import { leads as LEADS_DATA, type PipelineStage, type PipelineLead } from '../data/mockData';
+import { leads as LEADS_DATA, type PipelineStage, type PipelineLead, LEAD_SOURCES } from '../data/mockData';
 
 const PIPELINE_STAGES: PipelineStage[] = [
   'New Inquiry',
@@ -111,13 +113,23 @@ const LeadProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Overview');
+  const [adminCorrectionOpen, setAdminCorrectionOpen] = useState(false);
+  const [correctedSource, setCorrectedSource] = useState<string>('');
 
   const lead = LEADS_DATA.find(l => l.id === id);
   const [status, setStatus] = useState<PipelineStage>(lead?.status || 'New Inquiry');
+  const [displaySource, setDisplaySource] = useState(lead?.source || '');
   const [noteText, setNoteText] = useState('');
   const [notes, setNotes] = useState<Note[]>(lead ? generateNotes(lead) : []);
 
   const activities = useMemo(() => lead ? generateActivities(lead) : [], [lead]);
+
+  const handleAdminCorrectionSubmit = () => {
+    if (correctedSource && correctedSource !== displaySource) {
+      setDisplaySource(correctedSource as typeof lead.source);
+    }
+    setAdminCorrectionOpen(false);
+  };
 
   if (!lead) {
     return (
@@ -271,7 +283,6 @@ const LeadProfile: React.FC = () => {
                 {[
                   { icon: Phone, label: 'Phone', value: lead.phone },
                   { icon: Mail, label: 'Email', value: lead.email },
-                  { icon: Globe, label: 'Source', value: lead.source },
                   { icon: Globe, label: 'Destination', value: lead.interestedCountry || 'Not Selected' },
                   { icon: GraduationCap, label: 'Target Level', value: lead.targetLevel },
                   { icon: UserCheck, label: 'Counsellor', value: lead.assignedCounsellor },
@@ -282,6 +293,26 @@ const LeadProfile: React.FC = () => {
                     <span className="text-gray-900 dark:text-white font-medium">{value}</span>
                   </div>
                 ))}
+
+                {/* Source — immutable with admin correction */}
+                <div className="flex items-start text-sm">
+                  <Globe className="w-4 h-4 mr-3 text-gray-400 mt-0.5" />
+                  <span className="text-gray-500 dark:text-gray-400 w-32">Source:</span>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                        {displaySource}
+                      </span>
+                      <Lock className="w-3 h-3 text-amber-500" title="Source is immutable" />
+                    </div>
+                    <button
+                      onClick={() => { setCorrectedSource(displaySource); setAdminCorrectionOpen(true); }}
+                      className="mt-1.5 text-[10px] text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1"
+                    >
+                      <ShieldAlert className="w-3 h-3" /> Admin correction
+                    </button>
+                  </div>
+                </div>
               </div>
             </Card>
 
@@ -449,6 +480,55 @@ const LeadProfile: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Admin Source Correction Modal */}
+      {adminCorrectionOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setAdminCorrectionOpen(false)} />
+          <Card className="relative w-full max-w-sm shadow-2xl">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
+                <ShieldAlert className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-gray-900 dark:text-white">Admin Source Correction</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">This action is audited and irreversible.</p>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Current Source</p>
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">{displaySource}</span>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Corrected Source</label>
+                <select
+                  value={correctedSource}
+                  onChange={e => setCorrectedSource(e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm dark:text-white"
+                >
+                  {LEAD_SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <p className="text-[10px] text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 rounded-lg px-3 py-2">
+                Source corrections are logged for audit purposes. Only perform this if the original source was recorded in error.
+              </p>
+            </div>
+            <div className="flex items-center justify-end gap-3 mt-5">
+              <button onClick={() => setAdminCorrectionOpen(false)} className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
+                Cancel
+              </button>
+              <button
+                onClick={handleAdminCorrectionSubmit}
+                disabled={!correctedSource || correctedSource === displaySource}
+                className="px-4 py-2 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors"
+              >
+                Apply Correction
+              </button>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };

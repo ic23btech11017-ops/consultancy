@@ -721,13 +721,17 @@ const CommissionReports: React.FC = () => {
 // Lead Source Reports Tab
 // ═══════════════════════════════════════════
 const LeadSourceReports: React.FC = () => {
+  const [sourceFilter, setSourceFilter] = useState('All');
+
   const data = useMemo(() => {
-    const sourceMap: Record<string, { leads: number; applications: number; conversions: number }> = {};
+    const sourceMap: Record<string, { leads: number; applications: number; conversions: number; lost: number }> = {};
 
     leads.forEach(l => {
-      if (!sourceMap[l.source]) sourceMap[l.source] = { leads: 0, applications: 0, conversions: 0 };
+      if (!sourceMap[l.source]) sourceMap[l.source] = { leads: 0, applications: 0, conversions: 0, lost: 0 };
       sourceMap[l.source].leads++;
-      if (l.status === 'Converted' || l.status === 'Application Started') sourceMap[l.source].conversions++;
+      // v1 conversion = status 'Converted' only (not Application Started)
+      if (l.status === 'Converted') sourceMap[l.source].conversions++;
+      if (l.status === 'Lost') sourceMap[l.source].lost++;
     });
 
     // Count applications traced through lead→student→application chain
@@ -739,30 +743,46 @@ const LeadSourceReports: React.FC = () => {
     });
 
     return Object.entries(sourceMap)
-      .map(([source, stats]) => ({
-        source,
-        ...stats,
-        conversionRate: stats.leads > 0 ? ((stats.conversions / stats.leads) * 100).toFixed(1) : '0.0',
-      }))
+      .map(([source, stats]) => {
+        const closed = stats.conversions + stats.lost;
+        return {
+          source,
+          ...stats,
+          // v1 formula: converted / (converted + lost) — true win rate on closed leads
+          conversionRate: closed > 0 ? ((stats.conversions / closed) * 100).toFixed(1) : '0.0',
+        };
+      })
       .sort((a, b) => b.leads - a.leads);
   }, []);
 
-  const maxLeads = Math.max(...data.map(d => d.leads), 1);
+  const filtered = sourceFilter === 'All' ? data : data.filter(d => d.source === sourceFilter);
+  const maxLeads = Math.max(...filtered.map(d => d.leads), 1);
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-bold text-gray-900 dark:text-white">Lead Source Performance</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Lead Source Performance</h3>
+        <select
+          value={sourceFilter}
+          onChange={e => setSourceFilter(e.target.value)}
+          className="px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+        >
+          <option value="All">All Sources</option>
+          {data.map(d => <option key={d.source} value={d.source}>{d.source}</option>)}
+        </select>
+      </div>
 
       {/* Source breakdown bar chart */}
       <Card className="border-none shadow-sm">
+        <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">Lead Volume by Source</p>
         <div className="space-y-5">
-          {data.map(d => (
+          {filtered.map(d => (
             <div key={d.source} className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="font-medium text-gray-700 dark:text-gray-300">{d.source}</span>
-                <span className="font-bold text-gray-900 dark:text-white">{d.leads} leads</span>
+                <span className="font-bold text-gray-900 dark:text-white">{d.leads} leads · <span className="text-emerald-600 dark:text-emerald-400">{d.conversionRate}% conv.</span></span>
               </div>
-              <ProgressBar value={d.leads} max={maxLeads} color="bg-rose-500" />
+              <ProgressBar value={d.leads} max={maxLeads} color="bg-blue-500" />
             </div>
           ))}
         </div>
@@ -772,7 +792,7 @@ const LeadSourceReports: React.FC = () => {
       <Card className="border-none shadow-sm">
         <h4 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider mb-4">Campaign Performance</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {campaigns.map(c => (
+          {campaigns.filter(c => sourceFilter === 'All' || c.source === sourceFilter).map(c => (
             <div key={c.id} className="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800">
               <div className="flex justify-between items-start mb-2">
                 <p className="text-sm font-bold text-gray-900 dark:text-white">{c.name}</p>
@@ -795,23 +815,25 @@ const LeadSourceReports: React.FC = () => {
             <thead>
               <tr className="bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700">
                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Source</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Leads</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Leads</th>
                 <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Applications</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Conversions</th>
-                <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Conversion Rate</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Converted</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Lost</th>
+                <th className="px-6 py-4 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Conv. Rate <span className="font-normal normal-case text-[10px]">(of closed)</span></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-              {data.map(d => (
+              {filtered.map(d => (
                 <tr key={d.source} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
                   <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{d.source}</td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{d.leads}</td>
                   <td className="px-6 py-4 text-sm text-blue-600 font-medium">{d.applications}</td>
-                  <td className="px-6 py-4 text-sm text-green-600 font-medium">{d.conversions}</td>
+                  <td className="px-6 py-4 text-sm text-emerald-600 dark:text-emerald-400 font-medium">{d.conversions}</td>
+                  <td className="px-6 py-4 text-sm text-red-500 font-medium">{d.lost}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-semibold text-gray-900 dark:text-white w-12">{d.conversionRate}%</span>
-                      <div className="flex-1"><ProgressBar value={Number(d.conversionRate)} max={100} color="bg-rose-500" /></div>
+                      <div className="flex-1"><ProgressBar value={Number(d.conversionRate)} max={100} color="bg-emerald-500" /></div>
                     </div>
                   </td>
                 </tr>

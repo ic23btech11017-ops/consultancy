@@ -1,7 +1,7 @@
 // ── Shared Types ──
 export type PipelineStage = 'New Inquiry' | 'Initial Counseling' | 'Destination Selection' | 'Course Shortlisting' | 'University Selection' | 'Application Preparation' | 'Application Started' | 'Converted' | 'Lost';
 export type TestStatus = 'Not Taken' | 'Enrolled' | 'Score Available';
-export type LeadSource = 'Walk-in' | 'Marketing Lead' | 'Test Prep Referral' | 'Facebook Ads' | 'Google Search' | 'Instagram' | 'Referral' | 'Direct Walk-in';
+export type LeadSource = 'Walk-in' | 'Marketing Lead' | 'Test Prep Referral' | 'Facebook Ads' | 'Google Search' | 'Instagram' | 'Referral' | 'Direct Walk-in' | 'Website Form';
 export type Branch = 'Hyderabad' | 'Kolkata' | 'Delhi';
 export type TestType = 'IELTS' | 'PTE' | 'SAT';
 export type WalkInStatus = 'New Inquiry' | 'Demo Scheduled' | 'Demo Attended' | 'Enrolled' | 'Lost';
@@ -11,6 +11,22 @@ export type BatchStatus = 'Upcoming' | 'Running' | 'Completed';
 export type CommissionStatus = 'Pending' | 'Requested' | 'Received';
 export type PaymentFeeStatus = 'Paid' | 'Partial' | 'Unpaid' | 'Refunded';
 export type PaymentMode = 'Cash' | 'UPI' | 'Bank Transfer' | 'Card' | 'Online Gateway';
+export type CampaignStatus = 'Active' | 'Paused' | 'Completed' | 'Scheduled';
+
+// ── Canonical source registry (v1 — source-level attribution) ──
+// This is the single source of truth for all allowed lead sources.
+// source is immutable after lead creation (admin correction only).
+export const LEAD_SOURCES: LeadSource[] = [
+  'Walk-in',
+  'Direct Walk-in',
+  'Facebook Ads',
+  'Google Search',
+  'Instagram',
+  'Website Form',
+  'Marketing Lead',
+  'Referral',
+  'Test Prep Referral',
+];
 
 // ── Interfaces ──
 export interface PipelineLead {
@@ -18,7 +34,7 @@ export interface PipelineLead {
   name: string;
   phone: string;
   email: string;
-  source: LeadSource;
+  source: LeadSource; // immutable after creation — admin correction only
   interestedCountry: string;
   targetLevel: string;
   assignedCounsellor: string;
@@ -129,11 +145,18 @@ export interface Campaign {
   id: string;
   name: string;
   source: LeadSource;
+  status: CampaignStatus;
   startDate: string;
   endDate: string;
   budget: number;
+  spend: number;
+  impressions: number;
+  clicks: number;
   leadsGenerated: number;
   conversions: number;
+  targetCountry?: string;
+  targetLevel?: string;
+  description?: string;
 }
 
 export const leads: PipelineLead[] = [
@@ -351,6 +374,38 @@ export const leads: PipelineLead[] = [
     intakeTarget: 'Fall 2026',
     counselorNotes: ['University of Leeds and Manchester selected', 'SOP draft under review', 'Transcripts verified'],
     academicGoals: 'Analytics professional in UK tech sector',
+  },
+  {
+    id: '13',
+    name: 'Sanya Kapoor',
+    phone: '+91 80012 34567',
+    email: 'sanya.k@example.com',
+    source: 'Website Form',
+    interestedCountry: 'Canada',
+    targetLevel: 'Masters',
+    assignedCounsellor: 'Anjali Rao',
+    status: 'New Inquiry',
+    testStatus: 'Not Taken',
+    budgetRange: '₹20-30 Lakhs',
+    intakeTarget: 'Fall 2026',
+    academicGoals: 'Masters in Business Analytics at a Canadian university',
+  },
+  {
+    id: '14',
+    name: 'Mohit Saxena',
+    phone: '+91 99234 11223',
+    email: 'mohit.s@example.com',
+    source: 'Website Form',
+    interestedCountry: 'UK',
+    targetLevel: 'Masters',
+    assignedCounsellor: 'Ravi Mehta',
+    status: 'Initial Counseling',
+    testStatus: 'Enrolled',
+    testType: 'IELTS',
+    budgetRange: '₹15-22 Lakhs',
+    intakeTarget: 'Fall 2026',
+    counselorNotes: ['Came via website contact form', 'Interested in MSc courses in London'],
+    academicGoals: 'Technology management career in UK',
   },
 ];
 
@@ -736,15 +791,144 @@ export const paymentRecords: PaymentRecord[] = [
 
 // ── Campaigns (Marketing / Lead Source) ──
 export const campaigns: Campaign[] = [
-  { id: 'CMP001', name: 'Spring 2026 Facebook Campaign', source: 'Facebook Ads', startDate: '2025-11-01', endDate: '2026-02-28', budget: 50000, leadsGenerated: 200, conversions: 80 },
-  { id: 'CMP002', name: 'Google Ads - Masters Abroad', source: 'Google Search', startDate: '2025-12-01', endDate: '2026-03-31', budget: 75000, leadsGenerated: 180, conversions: 65 },
-  { id: 'CMP003', name: 'Instagram Study Abroad Series', source: 'Instagram', startDate: '2026-01-01', endDate: '2026-04-30', budget: 30000, leadsGenerated: 120, conversions: 40 },
-  { id: 'CMP004', name: 'Referral Bonus Program', source: 'Referral', startDate: '2025-10-01', endDate: '2026-06-30', budget: 20000, leadsGenerated: 90, conversions: 55 },
-  { id: 'CMP005', name: 'Walk-in Open House Events', source: 'Walk-in', startDate: '2026-01-15', endDate: '2026-03-15', budget: 15000, leadsGenerated: 75, conversions: 35 },
-  { id: 'CMP006', name: 'Direct Walk-in Promotions', source: 'Direct Walk-in', startDate: '2026-02-01', endDate: '2026-05-31', budget: 10000, leadsGenerated: 50, conversions: 20 },
-  { id: 'CMP007', name: 'Test Prep Cross-Sell Campaign', source: 'Test Prep Referral', startDate: '2025-11-15', endDate: '2026-04-15', budget: 25000, leadsGenerated: 60, conversions: 30 },
-  { id: 'CMP008', name: 'Marketing Lead Nurture Funnel', source: 'Marketing Lead', startDate: '2026-01-01', endDate: '2026-06-30', budget: 40000, leadsGenerated: 150, conversions: 50 },
+  { id: 'CMP001', name: 'Spring 2026 Facebook Campaign', source: 'Facebook Ads', status: 'Completed', startDate: '2025-11-01', endDate: '2026-02-28', budget: 50000, spend: 48200, impressions: 320000, clicks: 4800, leadsGenerated: 200, conversions: 80, targetCountry: 'UK', targetLevel: 'Masters', description: 'Targeted Facebook ads for UK Masters aspirants' },
+  { id: 'CMP002', name: 'Google Ads – Masters Abroad', source: 'Google Search', status: 'Active', startDate: '2025-12-01', endDate: '2026-03-31', budget: 75000, spend: 52000, impressions: 510000, clicks: 7200, leadsGenerated: 180, conversions: 65, targetCountry: 'USA', targetLevel: 'Masters', description: 'Google Search ads targeting Masters study abroad keywords' },
+  { id: 'CMP003', name: 'Instagram Study Abroad Series', source: 'Instagram', status: 'Active', startDate: '2026-01-01', endDate: '2026-04-30', budget: 30000, spend: 18500, impressions: 280000, clicks: 3100, leadsGenerated: 120, conversions: 40, targetCountry: 'Australia', targetLevel: 'Bachelors', description: 'Instagram reel series for student study abroad stories' },
+  { id: 'CMP004', name: 'Referral Bonus Program', source: 'Referral', status: 'Active', startDate: '2025-10-01', endDate: '2026-06-30', budget: 20000, spend: 12000, impressions: 0, clicks: 0, leadsGenerated: 90, conversions: 55, description: 'Alumni and student referral incentive program' },
+  { id: 'CMP005', name: 'Walk-in Open House Events', source: 'Walk-in', status: 'Completed', startDate: '2026-01-15', endDate: '2026-03-15', budget: 15000, spend: 14800, impressions: 0, clicks: 0, leadsGenerated: 75, conversions: 35, description: 'Monthly open house events at all three branches' },
+  { id: 'CMP006', name: 'Direct Walk-in Promotions', source: 'Direct Walk-in', status: 'Active', startDate: '2026-02-01', endDate: '2026-05-31', budget: 10000, spend: 3200, impressions: 0, clicks: 0, leadsGenerated: 50, conversions: 20, description: 'In-branch promotional materials and outreach' },
+  { id: 'CMP007', name: 'Test Prep Cross-Sell Campaign', source: 'Test Prep Referral', status: 'Active', startDate: '2025-11-15', endDate: '2026-04-15', budget: 25000, spend: 16400, impressions: 0, clicks: 0, leadsGenerated: 60, conversions: 30, description: 'Convert test prep students into overseas counseling pipeline' },
+  { id: 'CMP008', name: 'Marketing Lead Nurture Funnel', source: 'Marketing Lead', status: 'Active', startDate: '2026-01-01', endDate: '2026-06-30', budget: 40000, spend: 21000, impressions: 195000, clicks: 2900, leadsGenerated: 150, conversions: 50, targetLevel: 'Masters', description: 'Email + WhatsApp nurture sequences for inbound marketing leads' },
+  { id: 'CMP009', name: 'Canada Fall 2026 Google Campaign', source: 'Google Search', status: 'Scheduled', startDate: '2026-04-01', endDate: '2026-07-31', budget: 60000, spend: 0, impressions: 0, clicks: 0, leadsGenerated: 0, conversions: 0, targetCountry: 'Canada', targetLevel: 'Masters', description: 'Planned Google Ads campaign for Canada Fall 2026 intake' },
+  { id: 'CMP010', name: 'KALNET Website Lead Forms', source: 'Website Form', status: 'Active', startDate: '2026-01-01', endDate: '2026-12-31', budget: 35000, spend: 8500, impressions: 0, clicks: 0, leadsGenerated: 45, conversions: 18, description: 'Lead capture forms on KALNET website — contact page, program pages, and landing pages' },
 ];
+
+// ── Channel Details (placement-level metadata per source) ──
+export interface ChannelPlacement {
+  name: string;
+  url?: string;
+  format: string;
+  status: 'Active' | 'Paused';
+}
+
+export interface ChannelDetail {
+  type: 'Paid Digital' | 'Organic' | 'Offline' | 'Referral' | 'Partner Portal' | 'Website';
+  description: string;
+  targetAudience: string;
+  avgLeadQuality: 'High' | 'Medium' | 'Low';
+  placements: ChannelPlacement[];
+}
+
+export const CHANNEL_DETAILS: Record<LeadSource, ChannelDetail> = {
+  'Facebook Ads': {
+    type: 'Paid Digital',
+    description: 'Paid lead generation via Meta Ads Manager targeting study-abroad aspirants in India.',
+    targetAudience: 'Age 18–28 · Interests: Study Abroad, Education · Cities: Hyderabad, Delhi, Kolkata',
+    avgLeadQuality: 'Medium',
+    placements: [
+      { name: 'Facebook News Feed', url: 'facebook.com/KALNETConsultancy', format: 'Image + Carousel Ad', status: 'Active' },
+      { name: 'Facebook Stories', url: 'facebook.com/KALNETConsultancy', format: 'Story Ad (15s)', status: 'Active' },
+      { name: 'Instagram Feed (Meta)', url: 'instagram.com/kalnet_official', format: 'Image Ad via Meta', status: 'Active' },
+      { name: 'Messenger Inbox', url: 'facebook.com/KALNETConsultancy', format: 'Sponsored Message', status: 'Paused' },
+    ],
+  },
+  'Google Search': {
+    type: 'Paid Digital',
+    description: 'Search intent ads targeting students actively looking for study abroad consultancies and IELTS coaching.',
+    targetAudience: 'Keywords: "study abroad consultancy", "IELTS coaching", "MS in UK", "Canada student visa"',
+    avgLeadQuality: 'High',
+    placements: [
+      { name: 'Google Search Network', url: 'ads.google.com', format: 'Text Ad (RSA)', status: 'Active' },
+      { name: 'Google Display Network', url: 'ads.google.com', format: 'Banner Ad 728×90', status: 'Active' },
+      { name: 'YouTube Pre-Roll', url: 'youtube.com/@KALNETStudyAbroad', format: 'Skippable Video Ad (15s)', status: 'Paused' },
+      { name: 'Google Maps (Local)', url: 'maps.google.com', format: 'Local Ad Pin', status: 'Active' },
+    ],
+  },
+  'Instagram': {
+    type: 'Organic',
+    description: "Organic posts and boosted content on KALNET's Instagram targeting younger study-abroad aspirants.",
+    targetAudience: 'Age 17–24 · 12th grade & undergraduate students · Career-aware audience',
+    avgLeadQuality: 'Medium',
+    placements: [
+      { name: 'Instagram Feed', url: 'instagram.com/kalnet_official', format: 'Image / Reel Post', status: 'Active' },
+      { name: 'Instagram Stories', url: 'instagram.com/kalnet_official', format: 'Story with CTA Link', status: 'Active' },
+      { name: 'Instagram Reels', url: 'instagram.com/kalnet_official', format: 'Short Video (30s)', status: 'Active' },
+      { name: 'Instagram Explore', url: 'instagram.com/kalnet_official', format: 'Explore Page Ad', status: 'Paused' },
+    ],
+  },
+  'Referral': {
+    type: 'Referral',
+    description: 'Word-of-mouth leads from converted students, alumni, and partner educational institutes.',
+    targetAudience: 'Existing student network, alumni, partner college students, parent networks',
+    avgLeadQuality: 'High',
+    placements: [
+      { name: 'Alumni Network', format: 'Word of Mouth / WhatsApp', status: 'Active' },
+      { name: 'Partner Colleges', format: 'Campus Visit / Brochure', status: 'Active' },
+      { name: 'Parent Referrals', format: 'Personal Introduction', status: 'Active' },
+      { name: 'Counsellor Network', format: 'Direct Recommendation', status: 'Active' },
+    ],
+  },
+  'Walk-in': {
+    type: 'Offline',
+    description: 'Students who walk directly into a KALNET office without prior appointment.',
+    targetAudience: 'Local students near KALNET office locations in Hyderabad, Delhi, and Kolkata',
+    avgLeadQuality: 'High',
+    placements: [
+      { name: 'Hyderabad Office', url: 'Banjara Hills, Hyderabad', format: 'Front Desk Intake', status: 'Active' },
+      { name: 'Delhi Office', url: 'Connaught Place, New Delhi', format: 'Front Desk Intake', status: 'Active' },
+      { name: 'Kolkata Office', url: 'Park Street, Kolkata', format: 'Front Desk Intake', status: 'Active' },
+    ],
+  },
+  'Direct Walk-in': {
+    type: 'Offline',
+    description: 'Leads from students who visited after attending an offline event, seminar, or education fair.',
+    targetAudience: 'Event attendees, seminar participants, education fair visitors',
+    avgLeadQuality: 'High',
+    placements: [
+      { name: 'Education Fairs', format: 'Exhibition Stall / Booth', status: 'Active' },
+      { name: 'School Seminars', format: 'Guest Lecture / Info Session', status: 'Active' },
+      { name: 'College Campus Visits', format: 'On-Campus Presentation', status: 'Active' },
+      { name: 'Community Events', format: 'Banner + Brochure Distribution', status: 'Paused' },
+    ],
+  },
+  'Marketing Lead': {
+    type: 'Partner Portal',
+    description: 'Leads acquired through third-party education portals and aggregator platforms.',
+    targetAudience: 'Students actively browsing online education platforms and comparison portals',
+    avgLeadQuality: 'Medium',
+    placements: [
+      { name: 'Shiksha.com', url: 'shiksha.com/study-abroad', format: 'Lead Form Ad', status: 'Active' },
+      { name: 'Collegedunia.com', url: 'collegedunia.com', format: 'Sponsored Profile', status: 'Active' },
+      { name: 'CollegeDekho', url: 'collegedekho.com', format: 'Lead Generation Form', status: 'Paused' },
+      { name: 'Leverage Edu', url: 'leverageedu.com', format: 'Partner Listing', status: 'Active' },
+    ],
+  },
+  'Test Prep Referral': {
+    type: 'Referral',
+    description: "Students enrolled in KALNET's IELTS/PTE/SAT test prep programs who opt into overseas counseling.",
+    targetAudience: 'Active test prep batch students across KALNET branches',
+    avgLeadQuality: 'High',
+    placements: [
+      { name: 'IELTS Batch Counseling', format: 'In-Class Introduction Session', status: 'Active' },
+      { name: 'PTE Batch Counseling', format: 'In-Class Introduction Session', status: 'Active' },
+      { name: 'SAT Batch Counseling', format: 'In-Class Introduction Session', status: 'Active' },
+      { name: 'WhatsApp Study Abroad Group', format: 'Group Broadcast Message', status: 'Active' },
+    ],
+  },
+  'Website Form': {
+    type: 'Website',
+    description: "Leads captured directly through KALNET's website forms — contact page, program inquiry pages, and dedicated study-abroad landing pages.",
+    targetAudience: 'Students visiting kalnet.in via organic search, direct traffic, or ad landing pages',
+    avgLeadQuality: 'High',
+    placements: [
+      { name: 'Contact Us Page', url: 'kalnet.in/contact', format: 'Lead Enquiry Form', status: 'Active' },
+      { name: 'UK Study Abroad Landing Page', url: 'kalnet.in/study-uk', format: 'Program Enquiry Form', status: 'Active' },
+      { name: 'Canada Masters Landing Page', url: 'kalnet.in/study-canada', format: 'Program Enquiry Form', status: 'Active' },
+      { name: 'Free Counseling CTA', url: 'kalnet.in/free-counseling', format: 'Appointment Booking Form', status: 'Active' },
+      { name: 'Blog — Study Abroad Guide', url: 'kalnet.in/blog', format: 'Newsletter & Callback Form', status: 'Paused' },
+    ],
+  },
+};
 
 // ── Walk-in Enquiries ──
 export let walkInEnquiries: WalkInEnquiry[] = [

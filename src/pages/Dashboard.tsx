@@ -47,7 +47,7 @@ const Dashboard: React.FC = () => {
       { label: 'Revenue Collected', value: `₹${totalRevenue.toLocaleString('en-IN')}`, icon: DollarSign, color: 'amber', path: '/finance' },
       { label: 'Pending Payments', value: `₹${pendingPayments.toLocaleString('en-IN')}`, icon: Clock, color: 'rose', path: '/finance' },
       { label: 'Walk-ins Today', value: walkInEnquiries.filter(w => w.inquiryDate === '2026-03-12').length, icon: UserPlus, color: 'teal', path: '/test-preparation' },
-      { label: 'Lead Conversion', value: `${leads.length > 0 ? Math.round((leads.filter(l => l.status === 'Converted').length / leads.length) * 100) : 0}%`, icon: Target, color: 'cyan', path: '/counseling' },
+      { label: 'Lead Conversion', value: `${(() => { const conv = leads.filter(l => l.status === 'Converted').length; const lost = leads.filter(l => l.status === 'Lost').length; const closed = conv + lost; return closed > 0 ? Math.round((conv / closed) * 100) : 0; })()}%`, icon: Target, color: 'cyan', path: '/counseling' },
     ];
   }, []);
 
