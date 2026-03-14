@@ -79,7 +79,7 @@ const Settings: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Organization Settings */} 
-        <Card className="border-none shadow-sm flex flex-col">
+        <Card shadowColor="blue" className="border-none flex flex-col">
           <div className="flex items-center space-x-2 mb-6">
             <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg">
               <Building className="w-5 h-5" />
@@ -154,7 +154,7 @@ const Settings: React.FC = () => {
         </Card>
 
         {/* Default Configurations */} 
-        <Card className="border-none shadow-sm flex flex-col">
+        <Card shadowColor="indigo" className="border-none flex flex-col">
           <div className="flex items-center space-x-2 mb-6">
             <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg">
               <Shield className="w-5 h-5" />
@@ -253,7 +253,7 @@ const Settings: React.FC = () => {
         </Card>
 
         {/* Document Requirements Settings */} 
-        <Card className="border-none shadow-sm">
+        <Card shadowColor="emerald" className="border-none">
           <div className="flex items-center space-x-2 mb-6">
             <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-lg">
               <FileText className="w-5 h-5" />
@@ -308,7 +308,7 @@ const Settings: React.FC = () => {
         </Card>
 
         {/* User Role Section (Display Only) */} 
-        <Card className="border-none shadow-sm">
+        <Card shadowColor="orange" className="border-none">
           <div className="flex items-center space-x-2 mb-6">
             <div className="p-2 bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-lg">
               <Users className="w-5 h-5" />

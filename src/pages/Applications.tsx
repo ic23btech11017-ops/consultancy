@@ -129,6 +129,7 @@ const Applications: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card 
           hoverable
+          shadowColor="indigo"
           onClick={() => setStatusFilter('')}
           className={`p-4 ${!statusFilter ? 'ring-2 ring-indigo-500 border-transparent' : ''}`}
         >
@@ -137,6 +138,7 @@ const Applications: React.FC = () => {
         </Card>
         <Card 
           hoverable
+          shadowColor="green"
           onClick={() => setStatusFilter('Offer Received')}
           className={`p-4 border-l-4 border-l-green-500 ${statusFilter === 'Offer Received' ? 'ring-2 ring-green-500 border-transparent' : ''}`}
         >
@@ -145,6 +147,7 @@ const Applications: React.FC = () => {
         </Card>
         <Card 
           hoverable
+          shadowColor="red"
           onClick={() => setStatusFilter('Rejected')}
           className={`p-4 border-l-4 border-l-red-500 ${statusFilter === 'Rejected' ? 'ring-2 ring-red-500 border-transparent' : ''}`}
         >
@@ -153,6 +156,7 @@ const Applications: React.FC = () => {
         </Card>
         <Card 
           hoverable
+          shadowColor="indigo"
           onClick={() => setStatusFilter('Accepted')}
           className={`p-4 border-l-4 border-l-indigo-500 ${statusFilter === 'Accepted' ? 'ring-2 ring-indigo-500 border-transparent' : ''}`}
         >

@@ -14,7 +14,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { PageHeader } from '../components/PageHeader';
-import { Card } from '../components/Card';
+import { Card, type ShadowColor } from '../components/Card';
 import { visaCases as MOCK_VISA_CASES } from '../data/mockData';
 
 interface VisaCase {
@@ -109,10 +109,10 @@ const VisaProcessing: React.FC = () => {
   }, [visaCases]);
 
   const stats = [
-    { label: 'Total Cases', value: visaCases.length, icon: ClipboardCheck, color: 'text-blue-600 dark:text-blue-400', iconBg: 'bg-blue-100 dark:bg-blue-900/20' },
-    { label: 'Approved', value: visaCases.filter(s => s.visaResult === 'Approved').length, icon: CheckCircle2, color: 'text-emerald-600 dark:text-emerald-400', iconBg: 'bg-emerald-100 dark:bg-emerald-900/20' },
-    { label: 'Rejected', value: visaCases.filter(s => s.visaResult === 'Rejected').length, icon: XCircle, color: 'text-red-600 dark:text-red-400', iconBg: 'bg-red-100 dark:bg-red-900/20' },
-    { label: 'Upcoming Interviews', value: upcomingAppointments.length, icon: Calendar, color: 'text-violet-600 dark:text-violet-400', iconBg: 'bg-violet-100 dark:bg-violet-900/20' },
+    { label: 'Total Cases', value: visaCases.length, icon: ClipboardCheck, color: 'text-blue-600 dark:text-blue-400', iconBg: 'bg-blue-100 dark:bg-blue-900/20', shadow: 'blue' as ShadowColor },
+    { label: 'Approved', value: visaCases.filter(s => s.visaResult === 'Approved').length, icon: CheckCircle2, color: 'text-emerald-600 dark:text-emerald-400', iconBg: 'bg-emerald-100 dark:bg-emerald-900/20', shadow: 'emerald' as ShadowColor },
+    { label: 'Rejected', value: visaCases.filter(s => s.visaResult === 'Rejected').length, icon: XCircle, color: 'text-red-600 dark:text-red-400', iconBg: 'bg-red-100 dark:bg-red-900/20', shadow: 'red' as ShadowColor },
+    { label: 'Upcoming Interviews', value: upcomingAppointments.length, icon: Calendar, color: 'text-violet-600 dark:text-violet-400', iconBg: 'bg-violet-100 dark:bg-violet-900/20', shadow: 'violet' as ShadowColor },
   ];
 
   return (
@@ -125,7 +125,7 @@ const VisaProcessing: React.FC = () => {
       {/* Summary Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map((stat, idx) => (
-          <Card key={idx} className="p-4 text-center">
+          <Card key={idx} shadowColor={stat.shadow} className="p-4 text-center">
             <div className={`flex items-center justify-center w-10 h-10 rounded-lg ${stat.iconBg} mx-auto mb-2`}>
               <stat.icon className={`w-5 h-5 ${stat.color}`} />
             </div>
@@ -137,7 +137,7 @@ const VisaProcessing: React.FC = () => {
 
       {/* Upcoming Interviews Card */}
       {upcomingAppointments.length > 0 && (
-        <Card className="border-l-4 border-yellow-400 overflow-hidden bg-white dark:bg-gray-800">
+        <Card shadowColor="amber" className="border-l-4 border-yellow-400 overflow-hidden bg-white dark:bg-gray-800">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
               <AlertTriangle size={18} className="text-yellow-500" />

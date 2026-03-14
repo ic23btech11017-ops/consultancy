@@ -18,7 +18,7 @@ import {
   IndianRupee,
 } from 'lucide-react';
 import { PageHeader } from '../components/PageHeader';
-import { Card } from '../components/Card';
+import { Card, type ShadowColor } from '../components/Card';
 import { Badge } from '../components/Badge';
 import { 
   students,
@@ -58,8 +58,8 @@ const ProgressBar: React.FC<{ value: number; max: number; color?: string }> = ({
 );
 
 // ── Helper: stat card ──
-const StatCard: React.FC<{ label: string; value: string | number; icon: React.ElementType; color: string; bg: string; sub?: string }> = ({ label, value, icon: Icon, color, bg, sub }) => (
-  <Card className="border-none shadow-sm">
+const StatCard: React.FC<{ label: string; value: string | number; icon: React.ElementType; color: string; bg: string; sub?: string; shadow?: ShadowColor }> = ({ label, value, icon: Icon, color, bg, sub, shadow }) => (
+  <Card shadowColor={shadow} className="border-none">
     <div className="flex justify-between items-start mb-2">
       <div className={`p-2 rounded-lg ${bg} ${color}`}><Icon size={20} /></div>
     </div>
@@ -118,11 +118,11 @@ const WalkInReports: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <StatCard label="Walk-ins Today" value={data.walkinsToday} icon={Users} color="text-blue-600" bg="bg-blue-50 dark:bg-blue-900/20" />
-        <StatCard label="This Week" value={data.walkinsThisWeek} icon={Calendar} color="text-indigo-600" bg="bg-indigo-50 dark:bg-indigo-900/20" />
-        <StatCard label="Demo Booked" value={data.demoBooked} icon={ClipboardList} color="text-amber-600" bg="bg-amber-50 dark:bg-amber-900/20" />
-        <StatCard label="Enrolled" value={data.enrolled} icon={CheckCircle2} color="text-green-600" bg="bg-green-50 dark:bg-green-900/20" />
-        <StatCard label="Conversion Rate" value={`${data.conversionRate}%`} icon={TrendingUp} color="text-purple-600" bg="bg-purple-50 dark:bg-purple-900/20" />
+        <StatCard label="Walk-ins Today" value={data.walkinsToday} icon={Users} color="text-blue-600" bg="bg-blue-50 dark:bg-blue-900/20" shadow="blue" />
+        <StatCard label="This Week" value={data.walkinsThisWeek} icon={Calendar} color="text-indigo-600" bg="bg-indigo-50 dark:bg-indigo-900/20" shadow="indigo" />
+        <StatCard label="Demo Booked" value={data.demoBooked} icon={ClipboardList} color="text-amber-600" bg="bg-amber-50 dark:bg-amber-900/20" shadow="amber" />
+        <StatCard label="Enrolled" value={data.enrolled} icon={CheckCircle2} color="text-green-600" bg="bg-green-50 dark:bg-green-900/20" shadow="green" />
+        <StatCard label="Conversion Rate" value={`${data.conversionRate}%`} icon={TrendingUp} color="text-purple-600" bg="bg-purple-50 dark:bg-purple-900/20" shadow="purple" />
       </div>
 
       {/* Branch breakdown table */}
@@ -649,9 +649,9 @@ const CommissionReports: React.FC = () => {
       <h3 className="text-lg font-bold text-gray-900 dark:text-white">Commission Tracking</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard label="Total Expected" value={`₹${totalExpected.toLocaleString('en-IN')}`} icon={IndianRupee} color="text-indigo-600" bg="bg-indigo-50 dark:bg-indigo-900/20" />
-        <StatCard label="Received" value={`₹${totalReceived.toLocaleString('en-IN')}`} icon={CheckCircle2} color="text-green-600" bg="bg-green-50 dark:bg-green-900/20" />
-        <StatCard label="Pending" value={`₹${(totalExpected - totalReceived).toLocaleString('en-IN')}`} icon={Briefcase} color="text-amber-600" bg="bg-amber-50 dark:bg-amber-900/20" />
+        <StatCard label="Total Expected" value={`₹${totalExpected.toLocaleString('en-IN')}`} icon={IndianRupee} color="text-indigo-600" bg="bg-indigo-50 dark:bg-indigo-900/20" shadow="indigo" />
+        <StatCard label="Received" value={`₹${totalReceived.toLocaleString('en-IN')}`} icon={CheckCircle2} color="text-green-600" bg="bg-green-50 dark:bg-green-900/20" shadow="green" />
+        <StatCard label="Pending" value={`₹${(totalExpected - totalReceived).toLocaleString('en-IN')}`} icon={Briefcase} color="text-amber-600" bg="bg-amber-50 dark:bg-amber-900/20" shadow="amber" />
       </div>
 
       {/* Per Partner */}
@@ -897,10 +897,10 @@ const PartnerReports: React.FC = () => {
     <div className="space-y-6">
       {/* Summary KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard label="Total Partners" value={partners.length} icon={Handshake} color="text-blue-600" bg="bg-blue-50 dark:bg-blue-900/20" />
-        <StatCard label="Total Referrals" value={data.totalReferrals} icon={Users} color="text-purple-600" bg="bg-purple-50 dark:bg-purple-900/20" />
-        <StatCard label="Commission Expected" value={`₹${data.totalCommExpected.toLocaleString('en-IN')}`} icon={IndianRupee} color="text-indigo-600" bg="bg-indigo-50 dark:bg-indigo-900/20" sub={`${data.partnerStats.filter(p => p.totalExpected > 0).length} partners with deals`} />
-        <StatCard label="Commission Received" value={`₹${data.totalCommReceived.toLocaleString('en-IN')}`} icon={CheckCircle2} color="text-green-600" bg="bg-green-50 dark:bg-green-900/20" sub={`₹${(data.totalCommExpected - data.totalCommReceived).toLocaleString('en-IN')} pending`} />
+        <StatCard label="Total Partners" value={partners.length} icon={Handshake} color="text-blue-600" bg="bg-blue-50 dark:bg-blue-900/20" shadow="blue" />
+        <StatCard label="Total Referrals" value={data.totalReferrals} icon={Users} color="text-purple-600" bg="bg-purple-50 dark:bg-purple-900/20" shadow="purple" />
+        <StatCard label="Commission Expected" value={`₹${data.totalCommExpected.toLocaleString('en-IN')}`} icon={IndianRupee} color="text-indigo-600" bg="bg-indigo-50 dark:bg-indigo-900/20" sub={`${data.partnerStats.filter(p => p.totalExpected > 0).length} partners with deals`} shadow="indigo" />
+        <StatCard label="Commission Received" value={`₹${data.totalCommReceived.toLocaleString('en-IN')}`} icon={CheckCircle2} color="text-green-600" bg="bg-green-50 dark:bg-green-900/20" sub={`₹${(data.totalCommExpected - data.totalCommReceived).toLocaleString('en-IN')} pending`} shadow="green" />
       </div>
 
       {/* Per-Partner Table */}
@@ -1030,10 +1030,10 @@ const FinanceReports: React.FC = () => {
       <h3 className="text-lg font-bold text-gray-900 dark:text-white">Finance Summary</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total Expected"       value={fmtR(data.totalExpected)}  icon={IndianRupee}  color="text-blue-600"    bg="bg-blue-50 dark:bg-blue-900/20" />
-        <StatCard label="Total Collected"      value={fmtR(data.totalCollected)} icon={CheckCircle2} color="text-emerald-600" bg="bg-emerald-50 dark:bg-emerald-900/20" />
-        <StatCard label="Test Prep Revenue"    value={fmtR(data.tpCollected)}    icon={IndianRupee}  color="text-indigo-600"  bg="bg-indigo-50 dark:bg-indigo-900/20"  sub={`of ${fmtR(data.tpExpected)} expected`} />
-        <StatCard label="Service Fee Revenue"  value={fmtR(data.sfCollected)}    icon={IndianRupee}  color="text-violet-600"  bg="bg-violet-50 dark:bg-violet-900/20"  sub={`of ${fmtR(data.sfExpected)} expected`} />
+        <StatCard label="Total Expected"       value={fmtR(data.totalExpected)}  icon={IndianRupee}  color="text-blue-600"    bg="bg-blue-50 dark:bg-blue-900/20" shadow="blue" />
+        <StatCard label="Total Collected"      value={fmtR(data.totalCollected)} icon={CheckCircle2} color="text-emerald-600" bg="bg-emerald-50 dark:bg-emerald-900/20" shadow="emerald" />
+        <StatCard label="Test Prep Revenue"    value={fmtR(data.tpCollected)}    icon={IndianRupee}  color="text-indigo-600"  bg="bg-indigo-50 dark:bg-indigo-900/20"  sub={`of ${fmtR(data.tpExpected)} expected`} shadow="indigo" />
+        <StatCard label="Service Fee Revenue"  value={fmtR(data.sfCollected)}    icon={IndianRupee}  color="text-violet-600"  bg="bg-violet-50 dark:bg-violet-900/20"  sub={`of ${fmtR(data.sfExpected)} expected`} shadow="violet" />
       </div>
 
       <Card className="border-none shadow-sm">

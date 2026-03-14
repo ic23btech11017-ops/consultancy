@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
-import { Card } from '../components/Card';
+import { Card, type ShadowColor } from '../components/Card';
 import { Badge } from '../components/Badge';
 import {
   Plus,
@@ -249,7 +249,7 @@ const TestPreparation: React.FC = () => {
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {summaryCards.map((card) => (
-          <Card key={card.label} className="flex items-center gap-4">
+          <Card key={card.label} shadowColor={card.color as ShadowColor} className="flex items-center gap-4">
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-${card.color}-100 dark:bg-${card.color}-900/20`}>
               <card.icon className={`w-6 h-6 text-${card.color}-600 dark:text-${card.color}-400`} />
             </div>

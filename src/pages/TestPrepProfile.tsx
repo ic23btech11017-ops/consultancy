@@ -454,7 +454,7 @@ const TestPrepProfile: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Test Prep Module */}
-              <Card className="space-y-4 border-l-4 border-l-blue-500">
+              <Card className="space-y-4 border-l-4 border-l-blue-500" shadowColor="blue">
                 <div className="flex items-center gap-2">
                   <BookOpen className="w-5 h-5 text-blue-500" />
                   <h4 className="text-base font-semibold text-gray-900 dark:text-white">Test Prep Module</h4>
@@ -467,7 +467,7 @@ const TestPrepProfile: React.FC = () => {
               </Card>
 
               {/* Counseling Module */}
-              <Card className={`space-y-4 border-l-4 ${student.referredToCounseling ? 'border-l-purple-500' : 'border-l-gray-300 dark:border-l-gray-600'}`}>
+              <Card className={`space-y-4 border-l-4 ${student.referredToCounseling ? 'border-l-purple-500' : 'border-l-gray-300 dark:border-l-gray-600'}`} shadowColor="purple">
                 <div className="flex items-center gap-2">
                   <UserCheck className="w-5 h-5 text-purple-500" />
                   <h4 className="text-base font-semibold text-gray-900 dark:text-white">Counseling Module</h4>
@@ -491,7 +491,7 @@ const TestPrepProfile: React.FC = () => {
               </Card>
 
               {/* Applications Module */}
-              <Card className={`space-y-4 border-l-4 ${studentApps.length > 0 ? 'border-l-emerald-500' : 'border-l-gray-300 dark:border-l-gray-600'}`}>
+              <Card className={`space-y-4 border-l-4 ${studentApps.length > 0 ? 'border-l-emerald-500' : 'border-l-gray-300 dark:border-l-gray-600'}`} shadowColor="emerald">
                 <div className="flex items-center gap-2">
                   <Phone className="w-5 h-5 text-emerald-500" />
                   <h4 className="text-base font-semibold text-gray-900 dark:text-white">Applications Module</h4>
@@ -511,7 +511,7 @@ const TestPrepProfile: React.FC = () => {
               </Card>
 
               {/* Visa Module */}
-              <Card className={`space-y-4 border-l-4 ${studentVisa ? 'border-l-indigo-500' : 'border-l-gray-300 dark:border-l-gray-600'}`}>
+              <Card className={`space-y-4 border-l-4 ${studentVisa ? 'border-l-indigo-500' : 'border-l-gray-300 dark:border-l-gray-600'}`} shadowColor="indigo">
                 <div className="flex items-center gap-2">
                   <Layers className="w-5 h-5 text-indigo-500" />
                   <h4 className="text-base font-semibold text-gray-900 dark:text-white">Visa Module</h4>

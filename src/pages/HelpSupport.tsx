@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PageHeader } from '../components/PageHeader';
-import { Card } from '../components/Card';
+import { Card, type ShadowColor } from '../components/Card';
 import {
   ChevronDown,
   ChevronUp,
@@ -93,7 +93,7 @@ const HelpSupport: React.FC = () => {
           { icon: Phone, label: 'Phone Support', value: '+91 98765 00001', color: 'emerald' },
           { icon: MessageSquare, label: 'Live Chat', value: 'Available Mon–Fri, 9am–6pm', color: 'indigo' },
         ].map(item => (
-          <Card key={item.label} className="flex items-center gap-4">
+          <Card key={item.label} shadowColor={item.color as ShadowColor} className="flex items-center gap-4">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-${item.color}-100 dark:bg-${item.color}-900/20 flex-shrink-0`}>
               <item.icon className={`w-5 h-5 text-${item.color}-600 dark:text-${item.color}-400`} />
             </div>
@@ -109,7 +109,7 @@ const HelpSupport: React.FC = () => {
 
         {/* FAQs */}
         <div className="lg:col-span-2 space-y-4">
-          <Card>
+          <Card shadowColor="blue">
             <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h3>
             <div className="relative mb-4">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -153,7 +153,7 @@ const HelpSupport: React.FC = () => {
         <div className="space-y-6">
 
           {/* Resources */}
-          <Card>
+          <Card shadowColor="purple">
             <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">Resources</h3>
             <div className="space-y-2">
               {RESOURCES.map(r => (
@@ -175,7 +175,7 @@ const HelpSupport: React.FC = () => {
           </Card>
 
           {/* Contact form */}
-          <Card>
+          <Card shadowColor="emerald">
             <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">Submit a Ticket</h3>
             {sent ? (
               <div className="flex flex-col items-center gap-3 py-6 text-center">

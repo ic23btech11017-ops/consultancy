@@ -20,7 +20,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { PageHeader } from '../components/PageHeader';
-import { Card } from '../components/Card';
+import { Card, type ShadowColor } from '../components/Card';
 import { Badge } from '../components/Badge';
 import {
   testPrepFees as initialTestPrepFees,
@@ -240,14 +240,14 @@ const Finance: React.FC = () => {
         <div className="space-y-6">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {[
-              { label: 'Total Expected',      value: fmt(overview.totalExpected),   icon: IndianRupee,  color: 'text-blue-600 dark:text-blue-400',     bg: 'bg-blue-100 dark:bg-blue-900/20' },
-              { label: 'Total Collected',     value: fmt(overview.totalCollected),  icon: CheckCircle2, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-900/20' },
-              { label: 'Total Pending',       value: fmt(overview.totalPending),    icon: Clock,        color: 'text-amber-600 dark:text-amber-400',    bg: 'bg-amber-100 dark:bg-amber-900/20' },
-              { label: "Today's Collection",  value: fmt(overview.todayCollection), icon: TrendingUp,   color: 'text-violet-600 dark:text-violet-400',  bg: 'bg-violet-100 dark:bg-violet-900/20' },
-              { label: 'Commission Pending',  value: fmt(overview.commPending),     icon: AlertCircle,  color: 'text-rose-600 dark:text-rose-400',      bg: 'bg-rose-100 dark:bg-rose-900/20' },
-              { label: 'Commission Received', value: fmt(overview.commReceived),    icon: Send,         color: 'text-teal-600 dark:text-teal-400',      bg: 'bg-teal-100 dark:bg-teal-900/20' },
+              { label: 'Total Expected',      value: fmt(overview.totalExpected),   icon: IndianRupee,  color: 'text-blue-600 dark:text-blue-400',     bg: 'bg-blue-100 dark:bg-blue-900/20',    shadow: 'blue' as ShadowColor },
+              { label: 'Total Collected',     value: fmt(overview.totalCollected),  icon: CheckCircle2, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-900/20', shadow: 'emerald' as ShadowColor },
+              { label: 'Total Pending',       value: fmt(overview.totalPending),    icon: Clock,        color: 'text-amber-600 dark:text-amber-400',    bg: 'bg-amber-100 dark:bg-amber-900/20',   shadow: 'amber' as ShadowColor },
+              { label: "Today's Collection",  value: fmt(overview.todayCollection), icon: TrendingUp,   color: 'text-violet-600 dark:text-violet-400',  bg: 'bg-violet-100 dark:bg-violet-900/20',  shadow: 'violet' as ShadowColor },
+              { label: 'Commission Pending',  value: fmt(overview.commPending),     icon: AlertCircle,  color: 'text-rose-600 dark:text-rose-400',      bg: 'bg-rose-100 dark:bg-rose-900/20',     shadow: 'rose' as ShadowColor },
+              { label: 'Commission Received', value: fmt(overview.commReceived),    icon: Send,         color: 'text-teal-600 dark:text-teal-400',      bg: 'bg-teal-100 dark:bg-teal-900/20',     shadow: 'teal' as ShadowColor },
             ].map((kpi, i) => (
-              <Card key={i} className="p-4 text-center border-none shadow-sm">
+              <Card key={i} shadowColor={kpi.shadow} className="p-4 text-center border-none">
                 <div className={`flex items-center justify-center w-10 h-10 rounded-lg ${kpi.bg} mx-auto mb-2`}>
                   <kpi.icon className={`w-5 h-5 ${kpi.color}`} />
                 </div>
@@ -257,7 +257,7 @@ const Finance: React.FC = () => {
             ))}
           </div>
 
-          <Card className="border-none shadow-sm">
+          <Card shadowColor="emerald" className="border-none">
             <div className="flex items-center justify-between mb-3">
               <div>
                 <p className="text-sm font-bold text-gray-900 dark:text-white">Overall Collection Progress</p>
@@ -274,7 +274,7 @@ const Finance: React.FC = () => {
             </div>
           </Card>
 
-          <Card className="p-0 overflow-hidden border-none shadow-sm">
+          <Card shadowColor="blue" className="p-0 overflow-hidden border-none">
             <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
               <Building2 className="w-4 h-4 text-blue-600" />
               <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Revenue by Branch</h3>
@@ -545,7 +545,7 @@ const Finance: React.FC = () => {
               const received = pComms.filter(c => c.status === 'Received').reduce((s, c) => s + c.expectedAmount, 0);
               const pending  = pComms.filter(c => c.status !== 'Received').reduce((s, c) => s + c.expectedAmount, 0);
               return (
-                <Card key={p.id} className="border-none shadow-sm">
+                <Card key={p.id} shadowColor="indigo" className="border-none">
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <p className="text-sm font-bold text-gray-900 dark:text-white">{p.name}</p>

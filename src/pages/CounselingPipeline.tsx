@@ -270,35 +270,35 @@ const CounselingPipeline: React.FC = () => {
 
       {/* Metric Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <Card className="p-4 text-center">
+        <Card shadowColor="blue" className="p-4 text-center">
           <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 mx-auto mb-2">
             <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
           <div className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.totalActive}</div>
           <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Active Leads</div>
         </Card>
-        <Card className="p-4 text-center">
+        <Card shadowColor="violet" className="p-4 text-center">
           <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-violet-100 dark:bg-violet-900/20 mx-auto mb-2">
             <MessageSquare className="w-5 h-5 text-violet-600 dark:text-violet-400" />
           </div>
           <div className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.inCounseling}</div>
           <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">In Counseling</div>
         </Card>
-        <Card className="p-4 text-center">
+        <Card shadowColor="amber" className="p-4 text-center">
           <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/20 mx-auto mb-2">
             <BookOpen className="w-5 h-5 text-amber-600 dark:text-amber-400" />
           </div>
           <div className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.awaitingTestPrep}</div>
           <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Awaiting Test Prep</div>
         </Card>
-        <Card className="p-4 text-center">
+        <Card shadowColor="blue" className="p-4 text-center">
           <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 mx-auto mb-2">
             <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
           <div className="text-2xl font-bold text-gray-900 dark:text-white">{metrics.appStarted}</div>
           <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Applications Started</div>
         </Card>
-        <Card className="p-4 text-center">
+        <Card shadowColor="emerald" className="p-4 text-center">
           <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/20 mx-auto mb-2">
             <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
           </div>

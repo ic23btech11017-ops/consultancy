@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '../components/PageHeader';
-import { Card } from '../components/Card';
+import { Card, type ShadowColor } from '../components/Card';
 import { 
   Users, 
   UserCheck, 
@@ -205,7 +205,8 @@ const Dashboard: React.FC = () => {
           <Card 
             key={idx} 
             hoverable
-            className="border-none shadow-sm group"
+            shadowColor={kpi.color as ShadowColor}
+            className="border-none group"
             onClick={() => navigate(kpi.path)}
           >
             <div className="flex flex-col space-y-2">
@@ -224,7 +225,7 @@ const Dashboard: React.FC = () => {
       {/* Counseling Pipeline & Test Prep */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Counseling Pipeline */}
-        <Card className="border-none shadow-sm">
+        <Card shadowColor="blue" className="border-none">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
               <GitBranch className="w-5 h-5 mr-2 text-blue-500" />
@@ -311,7 +312,7 @@ const Dashboard: React.FC = () => {
         </Card>
 
         {/* Test Preparation */}
-        <Card className="border-none shadow-sm">
+        <Card shadowColor="amber" className="border-none">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
               <BookOpen className="w-5 h-5 mr-2 text-amber-500" />
@@ -419,7 +420,7 @@ const Dashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Application Status Summary */}
-        <Card className="border-none shadow-sm">
+        <Card shadowColor="blue" className="border-none">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
               <TrendingUp className="w-5 h-5 mr-2 text-blue-500" />
@@ -450,7 +451,7 @@ const Dashboard: React.FC = () => {
         </Card>
 
         {/* Visa Stage Distribution */}
-        <Card className="border-none shadow-sm">
+        <Card shadowColor="purple" className="border-none">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
               <Globe className="w-5 h-5 mr-2 text-purple-500" />
@@ -476,7 +477,8 @@ const Dashboard: React.FC = () => {
 
         {/* Revenue Summary */}
         <Card 
-          className="border-none shadow-sm flex flex-col cursor-pointer hover:shadow-md transition-all duration-200"
+          shadowColor="emerald"
+          className="border-none flex flex-col cursor-pointer transition-all duration-200"
           onClick={() => navigate('/finance')}
         >
           <div className="flex items-center justify-between mb-6">
@@ -525,7 +527,7 @@ const Dashboard: React.FC = () => {
       {/* Top Universities, Applications by Country & Commission Overview */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Top Universities */}
-        <Card className="border-none shadow-sm">
+        <Card shadowColor="violet" className="border-none">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
               <Building2 className="w-5 h-5 mr-2 text-violet-500" />
@@ -560,7 +562,7 @@ const Dashboard: React.FC = () => {
         </Card>
 
         {/* Applications by Country */}
-        <Card className="border-none shadow-sm">
+        <Card shadowColor="cyan" className="border-none">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
               <Globe className="w-5 h-5 mr-2 text-cyan-500" />
@@ -586,7 +588,7 @@ const Dashboard: React.FC = () => {
         </Card>
 
         {/* Commission Overview */}
-        <Card className="border-none shadow-sm">
+        <Card shadowColor="amber" className="border-none">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
               <Briefcase className="w-5 h-5 mr-2 text-amber-500" />
@@ -631,7 +633,7 @@ const Dashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Country Insights */}
-        <Card className="border-none shadow-sm">
+        <Card shadowColor="indigo" className="border-none">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
               <Globe className="w-5 h-5 mr-2 text-indigo-500" />
@@ -671,7 +673,7 @@ const Dashboard: React.FC = () => {
         </Card>
 
         {/* Upcoming Interviews */}
-        <Card className="border-none shadow-sm">
+        <Card shadowColor="rose" className="border-none">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
               <Calendar className="w-5 h-5 mr-2 text-rose-500" />

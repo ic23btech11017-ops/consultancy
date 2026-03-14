@@ -254,6 +254,7 @@ const Leads: React.FC = () => {
                   <Card 
                     key={lead.id} 
                     hoverable
+                    shadowColor="blue"
                     onClick={() => navigate(`/leads/${lead.id}`)}
                     className="p-4 hover:border-blue-300 dark:hover:border-blue-700"
                   >

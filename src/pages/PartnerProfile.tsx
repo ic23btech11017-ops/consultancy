@@ -287,7 +287,7 @@ const PartnerProfile: React.FC = () => {
           </Card>
 
           {/* Referral Commission Details */}
-          <Card className="p-0 overflow-hidden border-none shadow-sm">
+          <Card className="p-0 overflow-hidden border-none shadow-sm" shadowColor="emerald">
             <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <DollarSign className="w-5 h-5 text-emerald-500" />
@@ -331,7 +331,7 @@ const PartnerProfile: React.FC = () => {
           </Card>
 
           {/* University Distribution */}
-          <Card className="border-none shadow-sm">
+          <Card className="border-none shadow-sm" shadowColor="purple">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <GraduationCap className="w-5 h-5 text-purple-500" />

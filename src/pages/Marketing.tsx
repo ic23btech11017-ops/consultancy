@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { PageHeader } from '../components/PageHeader';
-import { Card } from '../components/Card';
+import { Card, type ShadowColor } from '../components/Card';
 import { Badge } from '../components/Badge';
 import {
   Megaphone,
@@ -237,7 +237,7 @@ const Marketing: React.FC = () => {
     const { color: typeColor, icon: TypeIcon } = getTypeStyle(ch.type);
     const qualityColor = ch.avgLeadQuality === 'High' ? 'text-emerald-700 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-400' : ch.avgLeadQuality === 'Medium' ? 'text-amber-700 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-400' : 'text-red-700 bg-red-50 dark:bg-red-900/20 dark:text-red-400';
     return (
-      <button key={source} onClick={() => setSelectedSource(source)} className="text-left group">
+      <button key={source} onClick={() => setSelectedSource(source)} className="text-left group min-w-[260px] flex-shrink-0">
         <Card className="p-5 h-full hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md transition-all duration-200 border border-gray-100 dark:border-gray-700">
           <div className="flex items-start justify-between mb-3">
             <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${SOURCE_BG[source] || 'bg-gray-100 text-gray-600'}`}>{source}</span>
@@ -327,7 +327,7 @@ const Marketing: React.FC = () => {
                 purple: 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400',
               };
               return (
-                <Card key={kpi.label} className="p-4">
+                <Card key={kpi.label} shadowColor={kpi.color as ShadowColor} className="p-4">
                   <div className="flex items-start justify-between">
                     <div>
                       <p className="text-xs font-medium text-gray-500 dark:text-gray-400">{kpi.label}</p>
@@ -394,7 +394,7 @@ const Marketing: React.FC = () => {
           {/* Lead Trend + Source Breakdown */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             {/* Monthly Lead Trend */}
-            <Card className="xl:col-span-2 p-5">
+            <Card shadowColor="blue" className="xl:col-span-2 p-5">
               <div className="flex items-center justify-between mb-5">
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Monthly Lead & Conversion Trend</h3>
@@ -405,29 +405,38 @@ const Marketing: React.FC = () => {
                   <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span>Conversions</span>
                 </div>
               </div>
-              <div className="flex items-end gap-3 h-44">
-                {monthlyTrend.map(m => (
-                  <div key={m.month} className="flex-1 flex flex-col items-center gap-1">
-                    <div className="w-full flex items-end gap-1" style={{ height: '140px' }}>
-                      <div
-                        className="flex-1 bg-blue-500/80 dark:bg-blue-500/70 rounded-t-sm transition-all duration-300 hover:bg-blue-600 cursor-default"
-                        style={{ height: `${(m.leads / m.max) * 100}%` }}
-                        title={`Leads: ${m.leads}`}
-                      />
-                      <div
-                        className="flex-1 bg-emerald-400/80 dark:bg-emerald-500/70 rounded-t-sm transition-all duration-300 hover:bg-emerald-500 cursor-default"
-                        style={{ height: `${(m.conversions / m.max) * 100}%` }}
-                        title={`Conversions: ${m.conversions}`}
-                      />
+              <div className="flex gap-2">
+                {/* Y-axis labels */}
+                <div className="flex flex-col justify-between h-32 text-[10px] text-gray-400 dark:text-gray-500 text-right pr-1 pb-5">
+                  <span>{Math.max(...monthlyTrend.map(m => m.max))}</span>
+                  <span>{Math.round(Math.max(...monthlyTrend.map(m => m.max)) / 2)}</span>
+                  <span>0</span>
+                </div>
+                {/* Chart bars */}
+                <div className="flex-1 flex items-end gap-3 h-32 border-l border-b border-gray-200 dark:border-gray-700 pl-2 pb-1">
+                  {monthlyTrend.map(m => (
+                    <div key={m.month} className="flex-1 flex flex-col items-center gap-1">
+                      <div className="w-full flex items-end gap-1" style={{ height: '100px' }}>
+                        <div
+                          className="flex-1 bg-blue-500/80 dark:bg-blue-500/70 rounded-t-sm transition-all duration-300 hover:bg-blue-600 cursor-default"
+                          style={{ height: `${(m.leads / m.max) * 100}%` }}
+                          title={`Leads: ${m.leads}`}
+                        />
+                        <div
+                          className="flex-1 bg-emerald-400/80 dark:bg-emerald-500/70 rounded-t-sm transition-all duration-300 hover:bg-emerald-500 cursor-default"
+                          style={{ height: `${(m.conversions / m.max) * 100}%` }}
+                          title={`Conversions: ${m.conversions}`}
+                        />
+                      </div>
+                      <span className="text-[10px] text-gray-400 dark:text-gray-500">{m.month}</span>
                     </div>
-                    <span className="text-[10px] text-gray-400 dark:text-gray-500">{m.month}</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </Card>
 
             {/* Lead Source Distribution */}
-            <Card className="p-5">
+            <Card shadowColor="indigo" className="p-5">
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">Lead Source Breakdown</h3>
               <div className="space-y-3">
                 {sourceDistribution.map(({ source, count, pct }) => (
@@ -449,7 +458,7 @@ const Marketing: React.FC = () => {
           </div>
 
           {/* Top Performing Campaigns */}
-          <Card className="p-5">
+          <Card shadowColor="amber" className="p-5">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <Zap className="w-4 h-4 text-amber-500" />
@@ -614,7 +623,7 @@ const Marketing: React.FC = () => {
               <span className="text-xs text-gray-400 dark:text-gray-500">— Website, Paid Ads & Social Media</span>
             </div>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 ml-6">Click any channel to see placements, incoming leads, and full performance breakdown</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
+            <div className="flex gap-4 overflow-x-auto pb-3">
               {DIGITAL_SOURCES.map(renderChannelCard)}
             </div>
           </div>
@@ -625,7 +634,7 @@ const Marketing: React.FC = () => {
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Offline & Referral Channels</h3>
               <span className="text-xs text-gray-400 dark:text-gray-500">— Walk-in, Events & Referrals</span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div className="flex gap-4 overflow-x-auto pb-3">
               {OFFLINE_SOURCES.map(renderChannelCard)}
             </div>
           </div>
@@ -675,7 +684,7 @@ const Marketing: React.FC = () => {
                   purple: 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400',
                 };
                 return (
-                  <Card key={k.label} className={`p-4 border-l-4 ${k.color === 'blue' ? 'border-blue-500' : k.color === 'emerald' ? 'border-emerald-500' : k.color === 'rose' ? 'border-rose-500' : k.color === 'indigo' ? 'border-indigo-500' : k.color === 'amber' ? 'border-amber-500' : 'border-purple-500'}`}>
+                  <Card key={k.label} shadowColor={k.color as ShadowColor} className={`p-4 border-l-4 ${k.color === 'blue' ? 'border-blue-500' : k.color === 'emerald' ? 'border-emerald-500' : k.color === 'rose' ? 'border-rose-500' : k.color === 'indigo' ? 'border-indigo-500' : k.color === 'amber' ? 'border-amber-500' : 'border-purple-500'}`}>
                     <p className="text-xs text-gray-500 dark:text-gray-400">{k.label}</p>
                     <p className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{k.value}</p>
                   </Card>
@@ -698,7 +707,7 @@ const Marketing: React.FC = () => {
                 </Card>
 
                 {/* Placements card */}
-                <Card className="p-5">
+                <Card shadowColor="blue" className="p-5">
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                     <Layers className="w-4 h-4 text-blue-500" /> Placements & Pages
                   </h3>
@@ -727,7 +736,7 @@ const Marketing: React.FC = () => {
 
                 {/* Active Campaigns for this source */}
                 {sourceCampaigns.length > 0 && (
-                  <Card className="p-5">
+                  <Card shadowColor="blue" className="p-5">
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                       <Megaphone className="w-4 h-4 text-blue-500" /> Campaigns using this channel
                     </h3>

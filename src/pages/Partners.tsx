@@ -62,7 +62,7 @@ const Partners: React.FC = () => {
 
       {/* Stats Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="flex items-center space-x-4 border-none shadow-sm">
+        <Card shadowColor="blue" className="flex items-center space-x-4 border-none">
           <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600">
             <Users size={24} />
           </div>
@@ -71,7 +71,7 @@ const Partners: React.FC = () => {
             <p className="text-2xl font-bold text-gray-900 dark:text-white">{partnersData.length}</p>
           </div>
         </Card>
-        <Card className="flex items-center space-x-4 border-none shadow-sm">
+        <Card shadowColor="indigo" className="flex items-center space-x-4 border-none">
           <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600">
             <TrendingUp size={24} />
           </div>
@@ -82,7 +82,7 @@ const Partners: React.FC = () => {
             </p>
           </div>
         </Card>
-        <Card className="flex items-center space-x-4 border-none shadow-sm">
+        <Card shadowColor="green" className="flex items-center space-x-4 border-none">
           <div className="p-3 rounded-xl bg-green-50 dark:bg-green-900/20 text-green-600">
             <DollarSign size={24} />
           </div>
@@ -110,7 +110,7 @@ const Partners: React.FC = () => {
       </div>
 
       {/* Partners Table */}
-      <Card className="p-0 overflow-hidden border-none shadow-sm">
+      <Card className="p-0 overflow-hidden border-none">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>

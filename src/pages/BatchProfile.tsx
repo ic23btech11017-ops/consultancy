@@ -111,7 +111,7 @@ const BatchProfile: React.FC = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <Card className="border-none shadow-sm">
+        <Card className="border-none shadow-sm" shadowColor="amber">
           <p className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Test Type</p>
           <div className="flex items-center gap-2">
             <GraduationCap className="w-5 h-5 text-amber-500" />
@@ -146,7 +146,7 @@ const BatchProfile: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Exam Information */}
-        <Card className="border-none shadow-sm lg:col-span-1">
+        <Card className="border-none shadow-sm lg:col-span-1" shadowColor="amber">
           <div className="flex items-center gap-2 mb-4">
             <GraduationCap className="w-5 h-5 text-amber-500" />
             <h3 className="text-lg font-bold text-gray-900 dark:text-white">{batch.testType} Exam Details</h3>
@@ -236,7 +236,7 @@ const BatchProfile: React.FC = () => {
       </div>
 
       {/* Enrolled Students */}
-      <Card className="p-0 overflow-hidden border-none shadow-sm">
+      <Card className="p-0 overflow-hidden border-none shadow-sm" shadowColor="blue">
         <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <Users className="w-5 h-5 text-blue-500" />

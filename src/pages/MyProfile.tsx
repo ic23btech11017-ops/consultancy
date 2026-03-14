@@ -121,7 +121,7 @@ const MyProfile: React.FC = () => {
         <div className="lg:col-span-2 space-y-6">
 
           {/* Edit Profile */}
-          <Card>
+          <Card shadowColor="blue">
             <div className="flex items-center gap-2 mb-5">
               <User className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <h3 className="text-base font-semibold text-gray-900 dark:text-white">Edit Profile</h3>
@@ -171,7 +171,7 @@ const MyProfile: React.FC = () => {
           </Card>
 
           {/* Change Password */}
-          <Card>
+          <Card shadowColor="blue">
             <div className="flex items-center gap-2 mb-5">
               <Lock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <h3 className="text-base font-semibold text-gray-900 dark:text-white">Change Password</h3>
@@ -213,7 +213,7 @@ const MyProfile: React.FC = () => {
           </Card>
 
           {/* Notification Preferences */}
-          <Card>
+          <Card shadowColor="blue">
             <div className="flex items-center gap-2 mb-4">
               <Bell className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <h3 className="text-base font-semibold text-gray-900 dark:text-white">Notification Preferences</h3>
