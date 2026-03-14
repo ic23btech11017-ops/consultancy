@@ -241,7 +241,7 @@ const Applications: React.FC = () => {
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{app.course}</td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{app.country}</td>
                   <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{app.intake}</td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                     <select 
                       value={app.status}
                       onChange={(e) => handleStatusChange(app.id, e.target.value as ApplicationStatus)}
@@ -260,7 +260,7 @@ const Applications: React.FC = () => {
                       <option value="Accepted">Accepted</option>
                     </select>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                     <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
                       <MoreVertical size={18} />
                     </button>

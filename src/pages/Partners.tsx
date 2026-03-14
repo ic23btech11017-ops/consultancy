@@ -9,24 +9,27 @@ import {
   MoreVertical, 
   ExternalLink,
   DollarSign,
-  Briefcase
+  Briefcase,
+  X,
 } from 'lucide-react';
 import { PageHeader } from '../components/PageHeader';
 import { Card } from '../components/Card';
 import { Badge } from '../components/Badge';
 import { partners as initialPartners, students } from '../data/mockData';
 
+const COUNTRIES = ['UK', 'USA', 'Canada', 'Australia', 'Germany', 'New Zealand', 'Ireland'];
+
 const Partners: React.FC = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [partners, setPartners] = useState(initialPartners);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newPartner, setNewPartner] = useState({ name: '', country: 'UK', commissionPercentage: 10 });
 
   const partnersData = useMemo(() => {
-    return initialPartners.map(partner => {
-      // Calculate expected commission based on assigned students and their payments
-      // For simplicity, let's assume each student brings a standard fee of $5000 if not specified
-      // and commission is calculated on that.
+    return partners.map(partner => {
       const expectedCommission = partner.assignedStudents.reduce((acc, studentId) => {
-        const studentFee = 5000; // Standard fee for calculation
+        const studentFee = 5000;
         return acc + (studentFee * (partner.commissionPercentage / 100));
       }, 0);
 
@@ -38,7 +41,7 @@ const Partners: React.FC = () => {
         status
       };
     });
-  }, []);
+  }, [partners]);
 
   const filteredPartners = useMemo(() => {
     return partnersData.filter(partner => 
@@ -54,7 +57,10 @@ const Partners: React.FC = () => {
           title="Partners" 
           subtitle="Manage overseas partners and commission tracking." 
         />
-        <button className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all shadow-sm text-sm font-bold w-fit">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all shadow-sm text-sm font-bold w-fit"
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Partner
         </button>
@@ -167,6 +173,72 @@ const Partners: React.FC = () => {
           </table>
         </div>
       </Card>
+
+      {/* Add Partner Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <Card className="relative w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Add New Partner</h3>
+              <button onClick={() => setIsModalOpen(false)} className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const id = `PRT${String(partners.length + 1).padStart(3, '0')}`;
+                setPartners(prev => [...prev, { id, name: newPartner.name, country: newPartner.country, commissionPercentage: newPartner.commissionPercentage, assignedStudents: [], commissionReceived: 0 }]);
+                setNewPartner({ name: '', country: 'UK', commissionPercentage: 10 });
+                setIsModalOpen(false);
+              }}
+              className="space-y-4"
+            >
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Partner Name</label>
+                <input
+                  required
+                  type="text"
+                  value={newPartner.name}
+                  onChange={(e) => setNewPartner(p => ({ ...p, name: e.target.value }))}
+                  placeholder="e.g. Global Education Services"
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:text-white"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Country</label>
+                <select
+                  value={newPartner.country}
+                  onChange={(e) => setNewPartner(p => ({ ...p, country: e.target.value }))}
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:text-white"
+                >
+                  {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Commission Percentage (%)</label>
+                <input
+                  required
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={newPartner.commissionPercentage}
+                  onChange={(e) => setNewPartner(p => ({ ...p, commissionPercentage: Number(e.target.value) }))}
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:text-white"
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                  Cancel
+                </button>
+                <button type="submit" className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold transition-colors">
+                  Add Partner
+                </button>
+              </div>
+            </form>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
