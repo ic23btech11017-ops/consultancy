@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Search, Filter, MoreVertical, ExternalLink } from 'lucide-react';
+import { Plus, Search, Filter, MoreVertical, ExternalLink, Eye, Pencil, Trash2 } from 'lucide-react';
 import { PageHeader } from '../components/PageHeader';
 import { Card } from '../components/Card';
 import { Badge } from '../components/Badge';
@@ -57,6 +57,19 @@ const Applications: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [countryFilter, setCountryFilter] = useState('');
   const [intakeFilter, setIntakeFilter] = useState('');
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [editingApp, setEditingApp] = useState<Application | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpenMenuId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // New Application Form State
   const [newApp, setNewApp] = useState<Partial<Application>>({
@@ -107,6 +120,18 @@ const Applications: React.FC = () => {
     setApplications(apps => apps.map(app => 
       app.id === id ? { ...app, status: newStatus } : app
     ));
+  };
+
+  const handleDeleteApplication = (id: string) => {
+    setApplications(apps => apps.filter(app => app.id !== id));
+    setOpenMenuId(null);
+  };
+
+  const handleEditSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingApp) return;
+    setApplications(apps => apps.map(app => app.id === editingApp.id ? editingApp : app));
+    setEditingApp(null);
   };
 
   return (
@@ -261,9 +286,36 @@ const Applications: React.FC = () => {
                     </select>
                   </td>
                   <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                    <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-                      <MoreVertical size={18} />
-                    </button>
+                    <div className="relative" ref={openMenuId === app.id ? menuRef : undefined}>
+                      <button
+                        onClick={() => setOpenMenuId(openMenuId === app.id ? null : app.id)}
+                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+                      >
+                        <MoreVertical size={18} />
+                      </button>
+                      {openMenuId === app.id && (
+                        <div className="absolute right-0 z-50 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-100 dark:border-gray-700 py-1">
+                          <button
+                            onClick={() => { navigate(`/students/${app.studentId}`); setOpenMenuId(null); }}
+                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          >
+                            <Eye size={15} /> View Student
+                          </button>
+                          <button
+                            onClick={() => { setEditingApp({ ...app }); setOpenMenuId(null); }}
+                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          >
+                            <Pencil size={15} /> Edit Application
+                          </button>
+                          <button
+                            onClick={() => handleDeleteApplication(app.id)}
+                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                          >
+                            <Trash2 size={15} /> Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -278,6 +330,78 @@ const Applications: React.FC = () => {
           </table>
         </div>
       </Card>
+
+      {/* Edit Application Modal */}
+      {editingApp && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <Card className="w-full max-w-lg shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Edit Application</h2>
+              <button onClick={() => setEditingApp(null)} className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+                <Plus size={24} className="rotate-45" />
+              </button>
+            </div>
+            <form onSubmit={handleEditSave} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Student Name</label>
+                <input required type="text" value={editingApp.studentName}
+                  onChange={(e) => setEditingApp({ ...editingApp, studentName: e.target.value })}
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">University</label>
+                  <input required type="text" value={editingApp.university}
+                    onChange={(e) => setEditingApp({ ...editingApp, university: e.target.value })}
+                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Course</label>
+                  <input required type="text" value={editingApp.course}
+                    onChange={(e) => setEditingApp({ ...editingApp, course: e.target.value })}
+                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Country</label>
+                  <input required type="text" value={editingApp.country}
+                    onChange={(e) => setEditingApp({ ...editingApp, country: e.target.value })}
+                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Intake</label>
+                  <input required type="text" value={editingApp.intake}
+                    onChange={(e) => setEditingApp({ ...editingApp, intake: e.target.value })}
+                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                <select value={editingApp.status}
+                  onChange={(e) => setEditingApp({ ...editingApp, status: e.target.value as ApplicationStatus })}
+                  className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="Draft">Draft</option>
+                  <option value="Submitted">Submitted</option>
+                  <option value="Offer Received">Offer Received</option>
+                  <option value="Rejected">Rejected</option>
+                  <option value="Accepted">Accepted</option>
+                </select>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button type="button" onClick={() => setEditingApp(null)}
+                  className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
+                  Cancel
+                </button>
+                <button type="submit"
+                  className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm">
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </Card>
+        </div>
+      )}
 
       {/* Add Application Modal */}
       {isModalOpen && (

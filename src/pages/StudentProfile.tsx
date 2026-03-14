@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { StudentStatus, updateStudentStatus } from '../data/students';
+import { StudentStatus, updateStudentStatus, updateStudentProfile } from '../data/students';
 import { students, applications as applicationsData, payments as paymentsData, visaCases as visaCasesData, leads as pipelineLeads, type PipelineLead } from '../data/mockData';
 import { PageHeader } from '../components/PageHeader';
 import { Card } from '../components/Card';
@@ -49,6 +49,12 @@ import {
   type TestPrepStudentStatus,
   type FeeStatus,
 } from '../data/testPrepData';
+
+type EditableStudent = NonNullable<ReturnType<typeof students.find>> & {
+  gpa: string;
+  ieltsScore: string;
+  preferredCountry: string;
+};
 
 type DocStatus = 'Missing' | 'Uploaded' | 'Verified';
 type AppStatus = 'Draft' | 'Submitted' | 'Offer Received' | 'Rejected' | 'Accepted';
@@ -106,7 +112,9 @@ const StudentProfile: React.FC = () => {
     gpa: '3.8',
     ieltsScore: '7.5',
     preferredCountry: initialStudent.country || 'UK',
-  } : null);
+  } as EditableStudent : null);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [profileDraft, setProfileDraft] = useState<EditableStudent | null>(null);
 
   if (!student) {
     return (
@@ -419,6 +427,33 @@ const StudentProfile: React.FC = () => {
     updateStudentStatus(student.id, newStatus);
   };
 
+  const handleOpenEditProfile = () => {
+    if (!student) return;
+    setProfileDraft({ ...student });
+    setIsEditProfileOpen(true);
+  };
+
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!profileDraft) return;
+
+    setStudent(profileDraft);
+    updateStudentProfile(profileDraft.id, {
+      name: profileDraft.name,
+      phone: profileDraft.phone,
+      email: profileDraft.email,
+      country: profileDraft.country,
+      highestQualification: profileDraft.highestQualification,
+      targetLevel: profileDraft.targetLevel,
+      assignedCounsellor: profileDraft.assignedCounsellor,
+      status: profileDraft.status,
+      branch: profileDraft.branch,
+      leadSource: profileDraft.leadSource,
+    });
+    setIsEditProfileOpen(false);
+    setProfileDraft(null);
+  };
+
   const getStatusBadge = (status: StudentStatus) => {
     switch (status) {
       case 'Active': return <Badge variant="info">Active</Badge>;
@@ -521,7 +556,10 @@ const StudentProfile: React.FC = () => {
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Student ID: {student.id}</p>
           </div>
         </div>
-        <button className="flex items-center px-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200 text-sm font-medium">
+        <button
+          onClick={handleOpenEditProfile}
+          className="flex items-center px-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200 text-sm font-medium"
+        >
           <Edit3 className="w-4 h-4 mr-2" />
           Edit Profile
         </button>
@@ -1021,6 +1059,7 @@ const StudentProfile: React.FC = () => {
                     ))}
                   </tbody>
                 </table>
+
               </div>
             </Card>
 
@@ -1185,6 +1224,169 @@ const StudentProfile: React.FC = () => {
                 </Card>
               </div>
             )}
+          </div>
+        )}
+
+        {isEditProfileOpen && profileDraft && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <Card className="w-full max-w-3xl shadow-2xl max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Edit Student Profile</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Update personal and academic details from the profile header.</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setIsEditProfileOpen(false);
+                    setProfileDraft(null);
+                  }}
+                  className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-lg transition-colors duration-200"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveProfile} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Full Name</label>
+                    <input
+                      required
+                      type="text"
+                      value={profileDraft.name}
+                      onChange={(e) => setProfileDraft({ ...profileDraft, name: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 dark:text-white"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Phone</label>
+                    <input
+                      required
+                      type="text"
+                      value={profileDraft.phone}
+                      onChange={(e) => setProfileDraft({ ...profileDraft, phone: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 dark:text-white"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Email</label>
+                    <input
+                      required
+                      type="email"
+                      value={profileDraft.email}
+                      onChange={(e) => setProfileDraft({ ...profileDraft, email: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 dark:text-white"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Country</label>
+                    <input
+                      required
+                      type="text"
+                      value={profileDraft.country}
+                      onChange={(e) => setProfileDraft({ ...profileDraft, country: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 dark:text-white"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Assigned Counsellor</label>
+                    <input
+                      required
+                      type="text"
+                      value={profileDraft.assignedCounsellor}
+                      onChange={(e) => setProfileDraft({ ...profileDraft, assignedCounsellor: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 dark:text-white"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Preferred Country</label>
+                    <select
+                      value={profileDraft.preferredCountry}
+                      onChange={(e) => setProfileDraft({ ...profileDraft, preferredCountry: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 dark:text-white"
+                    >
+                      <option value="UK">UK</option>
+                      <option value="USA">USA</option>
+                      <option value="Canada">Canada</option>
+                      <option value="Australia">Australia</option>
+                      <option value="Germany">Germany</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Highest Qualification</label>
+                    <select
+                      value={profileDraft.highestQualification}
+                      onChange={(e) => setProfileDraft({ ...profileDraft, highestQualification: e.target.value as EditableStudent['highestQualification'] })}
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 dark:text-white"
+                    >
+                      <option value="12th">12th</option>
+                      <option value="Bachelors">Bachelors</option>
+                      <option value="Masters">Masters</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Target Study Level</label>
+                    <select
+                      value={profileDraft.targetLevel}
+                      onChange={(e) => setProfileDraft({ ...profileDraft, targetLevel: e.target.value as EditableStudent['targetLevel'] })}
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 dark:text-white"
+                    >
+                      <option value="Diploma">Diploma</option>
+                      <option value="Bachelors">Bachelors</option>
+                      <option value="Masters">Masters</option>
+                      <option value="PhD">PhD</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">GPA / Percentage</label>
+                    <input
+                      type="text"
+                      value={profileDraft.gpa}
+                      onChange={(e) => setProfileDraft({ ...profileDraft, gpa: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 dark:text-white"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">IELTS / TOEFL Score</label>
+                    <input
+                      type="text"
+                      value={profileDraft.ieltsScore}
+                      onChange={(e) => setProfileDraft({ ...profileDraft, ieltsScore: e.target.value })}
+                      className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 dark:text-white"
+                    />
+                  </div>
+                </div>
+
+                {((profileDraft.highestQualification === '12th' && !['Bachelors', 'Diploma'].includes(profileDraft.targetLevel)) ||
+                  (profileDraft.highestQualification === 'Bachelors' && profileDraft.targetLevel !== 'Masters') ||
+                  (profileDraft.highestQualification === 'Masters' && profileDraft.targetLevel !== 'PhD')) && (
+                  <div className="flex items-center p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-xs">
+                    <AlertCircle className="w-4 h-4 mr-2" />
+                    Warning: Target level must be higher than completed qualification.
+                  </div>
+                )}
+
+                <div className="flex items-center justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsEditProfileOpen(false);
+                      setProfileDraft(null);
+                    }}
+                    className="px-4 py-2 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200 text-sm font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 text-sm font-medium"
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Profile
+                  </button>
+                </div>
+              </form>
+            </Card>
           </div>
         )}
 

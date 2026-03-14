@@ -24,9 +24,28 @@ export const updateStudentStatus = (id: string, newStatus: StudentStatus) => {
   const index = MOCK_STUDENTS.findIndex(s => s.id === id);
   if (index !== -1) {
     MOCK_STUDENTS[index] = { ...MOCK_STUDENTS[index], status: newStatus };
+    const sharedIndex = INITIAL_STUDENTS.findIndex(s => s.id === id);
+    if (sharedIndex !== -1) {
+      INITIAL_STUDENTS[sharedIndex] = { ...INITIAL_STUDENTS[sharedIndex], status: newStatus };
+    }
     return true;
   }
   return false;
+};
+
+export const updateStudentProfile = (id: string, updates: Partial<Student>) => {
+  const index = MOCK_STUDENTS.findIndex(s => s.id === id);
+  if (index !== -1) {
+    MOCK_STUDENTS[index] = { ...MOCK_STUDENTS[index], ...updates };
+  }
+
+  const sharedIndex = INITIAL_STUDENTS.findIndex(s => s.id === id);
+  if (sharedIndex !== -1) {
+    INITIAL_STUDENTS[sharedIndex] = { ...INITIAL_STUDENTS[sharedIndex], ...updates };
+    return true;
+  }
+
+  return index !== -1;
 };
 
 export const addStudent = (student: Student) => {
