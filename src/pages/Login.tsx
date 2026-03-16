@@ -37,8 +37,8 @@ export default function Login() {
         <div className="absolute -bottom-32 -left-32 w-[400px] h-[400px] bg-sky-500/[0.07] rounded-full blur-3xl" />
         <div className="absolute -top-40 -right-40 w-[350px] h-[350px] bg-sky-500/[0.05] rounded-full blur-3xl" />
 
-        <div className="relative z-10 flex flex-col justify-center gap-10 p-10 pl-12 w-full min-h-full">
-          {/* Top — Logo */}
+        <div className="relative z-10 flex flex-col justify-center gap-8 w-full min-h-full px-16 py-12 max-w-2xl mx-auto">
+          {/* Logo */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-sky-500 flex items-center justify-center text-white font-bold text-lg">
               K
@@ -47,7 +47,7 @@ export default function Login() {
           </div>
 
           {/* Hero */}
-          <div className="max-w-md">
+          <div>
             <h2 className="text-3xl font-bold text-white leading-snug mb-4">
               The Digital Operating System for Modern Enterprises
             </h2>
@@ -56,25 +56,25 @@ export default function Login() {
             </p>
           </div>
 
-            {/* Feature list */}
-            <div className="space-y-3">
-              {[
-                { icon: GraduationCap, label: 'Student & Counseling Management' },
-                { icon: Globe, label: 'Application Tracking & Processing' },
-                { icon: Plane, label: 'End-to-end Visa Processing' },
-                { icon: Users, label: 'Partner Institution Network' },
-              ].map((item) => (
-                <div key={item.label} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center shrink-0">
-                    <item.icon size={16} className="text-sky-400" />
-                  </div>
-                  <span className="text-slate-300 text-sm">{item.label}</span>
+          {/* Feature list */}
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { icon: GraduationCap, label: 'Student & Counseling Management' },
+              { icon: Globe, label: 'Application Tracking & Processing' },
+              { icon: Plane, label: 'End-to-end Visa Processing' },
+              { icon: Users, label: 'Partner Institution Network' },
+            ].map((item) => (
+              <div key={item.label} className="flex items-center gap-3 bg-white/[0.03] rounded-lg px-3 py-2.5 border border-white/[0.05]">
+                <div className="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center shrink-0">
+                  <item.icon size={16} className="text-sky-400" />
                 </div>
-              ))}
-            </div>
+                <span className="text-slate-300 text-sm">{item.label}</span>
+              </div>
+            ))}
+          </div>
 
           {/* Stats */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-10 pt-2">
             {[
               { value: '15+', label: 'Modules' },
               { value: '5+', label: 'Institutions' },
