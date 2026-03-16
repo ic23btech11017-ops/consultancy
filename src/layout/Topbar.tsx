@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Sun, Moon, Bell, Search, PanelLeftClose, PanelLeft, Check, Users, CreditCard, GraduationCap, CalendarClock } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 
 interface TopbarProps {
   collapsed: boolean;
@@ -17,6 +18,7 @@ const NOTIFICATIONS = [
 
 export const Topbar: React.FC<TopbarProps> = ({ collapsed, onToggleCollapse }) => {
   const { theme, toggleTheme } = useTheme();
+  const { logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
@@ -170,7 +172,7 @@ export const Topbar: React.FC<TopbarProps> = ({ collapsed, onToggleCollapse }) =
                 ))}
               </div>
               <div className="border-t border-gray-100 dark:border-gray-700 py-1">
-                <button className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150">
+                <button onClick={logout} className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150">
                   Sign out
                 </button>
               </div>

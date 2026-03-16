@@ -1,8 +1,10 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { Layout } from './layout/Layout';
 
 // Pages
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import CounselingPipeline from './pages/CounselingPipeline';
 import LeadProfile from './pages/LeadProfile';
@@ -21,32 +23,48 @@ import MyProfile from './pages/MyProfile';
 import HelpSupport from './pages/HelpSupport';
 import Marketing from './pages/Marketing';
 
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+}
+
+function AppRoutes() {
+  const { isAuthenticated } = useAuth();
+
+  return (
+    <Routes>
+      <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <Login />} />
+      <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+        <Route index element={<Dashboard />} />
+        <Route path="marketing" element={<Marketing />} />
+        <Route path="counseling" element={<CounselingPipeline />} />
+        <Route path="counseling/:id" element={<LeadProfile />} />
+        <Route path="students" element={<Students />} />
+        <Route path="students/:id" element={<StudentProfile />} />
+        <Route path="test-preparation" element={<TestPreparation />} />
+        <Route path="test-preparation/:id" element={<BatchProfile />} />
+        <Route path="applications" element={<Applications />} />
+        <Route path="visa-processing" element={<VisaProcessing />} />
+        <Route path="finance" element={<Finance />} />
+        <Route path="partners" element={<Partners />} />
+        <Route path="partners/:id" element={<PartnerProfile />} />
+        <Route path="reports" element={<Reports />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="my-profile" element={<MyProfile />} />
+        <Route path="help-support" element={<HelpSupport />} />
+      </Route>
+    </Routes>
+  );
+}
+
 export default function App() {
   return (
     <ThemeProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="marketing" element={<Marketing />} />
-            <Route path="counseling" element={<CounselingPipeline />} />
-            <Route path="counseling/:id" element={<LeadProfile />} />
-            <Route path="students" element={<Students />} />
-            <Route path="students/:id" element={<StudentProfile />} />
-            <Route path="test-preparation" element={<TestPreparation />} />
-            <Route path="test-preparation/:id" element={<BatchProfile />} />
-            <Route path="applications" element={<Applications />} />
-            <Route path="visa-processing" element={<VisaProcessing />} />
-            <Route path="finance" element={<Finance />} />
-            <Route path="partners" element={<Partners />} />
-            <Route path="partners/:id" element={<PartnerProfile />} />
-            <Route path="reports" element={<Reports />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="my-profile" element={<MyProfile />} />
-            <Route path="help-support" element={<HelpSupport />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
